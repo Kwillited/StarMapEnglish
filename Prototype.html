@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula English - 征服考研英语宇宙</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        space: '#0f172a',
+                        glass: 'rgba(255, 255, 255, 0.1)',
+                        accent: '#38bdf8', // 天蓝色
+                        vocab: '#818cf8',  // 紫色
+                        read: '#34d399',   // 绿色
+                        listen: '#fbbf24', // 黄色
+                        write: '#f472b6',  // 粉色
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        /* 玻璃拟态卡片效果 */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+        /* 隐藏滚动条但保留功能 */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col md:flex-row">
+
+    <nav class="fixed md:relative bottom-0 w-full md:w-24 md:h-screen bg-slate-900/90 md:bg-transparent border-t md:border-t-0 md:border-r border-slate-700 z-50 flex md:flex-col justify-around md:justify-center items-center py-3 md:py-0 md:gap-8 backdrop-blur-md">
+        <a href=" " class="text-accent text-2xl md:text-3xl md:mb-auto md:mt-8 hover:animate-pulse">
+            <i class="fa-solid fa-rocket"></i>
+        </a >
+        
+        <div class="flex md:flex-col gap-8 md:gap-10 text-xl text-slate-400">
+            <a href="#" class="hover:text-white transition group relative">
+                <i class="fa-solid fa-house"></i>
+                <span class="hidden md:block absolute left-14 top-1/2 -translate-y-1/2 bg-slate-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">控制台</span>
+            </a >
+            <a href="#" class="hover:text-vocab transition"><i class="fa-solid fa-shapes"></i></a >
+            <a href="#" class="hover:text-read transition"><i class="fa-solid fa-book-open"></i></a >
+            <a href="#" class="hover:text-listen transition"><i class="fa-solid fa-headphones"></i></a >
+            <a href="#" class="hover:text-write transition"><i class="fa-solid fa-pen-nib"></i></a >
+        </div>
+
+        <a href="#" class="hidden md:block md:mt-auto md:mb-8 text-slate-400 hover:text-white">
+            <i class="fa-solid fa-gear"></i>
+        </a >
+    </nav>
+
+    <main class="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto pb-24 md:pb-8">
+        
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">下午好, 指挥官 <span class="text-accent">Alex</span></h1>
+                <p class="text-slate-400 text-sm mt-1">当前任务: <span class="text-white bg-red-500/20 text-red-300 px-2 py-0.5 rounded text-xs border border-red-500/30">2026考研英语一</span></p >
+            </div>
+            
+            <div class="glass-card px-5 py-3 rounded-full flex items-center gap-4 w-full md:w-auto">
+                <div class="flex flex-col">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider">距离发射 (考试)</span>
+                    <span class="font-mono text-xl text-accent font-bold">186 <span class="text-xs font-normal text-slate-400">天</span></span>
+                </div>
+                <div class="h-8 w-[1px] bg-slate-600"></div>
+                <div class="flex flex-col">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider">今日能量</span>
+                    <span class="font-mono text-xl text-green-400 font-bold">85%</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+
+            <div class="glass-card p-6 rounded-3xl lg:col-span-8 relative overflow-hidden group cursor-pointer">
+                <div class="absolute top-0 right-0 p-32 bg-vocab/10 rounded-full blur-3xl -mr-16 -mt-16 transition group-hover:bg-vocab/20"></div>
+                
+                <div class="flex justify-between items-start relative z-10">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-2 h-2 rounded-full bg-vocab"></span>
+                            <h2 class="text-xl font-bold text-white">单词反应堆</h2>
+                        </div>
+                        <p class="text-slate-400 text-sm mb-6">今日核心词汇: 经济类 & 哲学类</p >
+                    </div>
+                    <span class="text-3xl font-bold text-vocab">50/120</span>
+                </div>
+
+                <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+                    <div class="min-w-[140px] h-32 bg-slate-800/50 rounded-xl p-4 flex flex-col justify-between border border-slate-700 hover:border-vocab transition">
+                        <span class="text-lg font-bold text-white">Ubiquitous</span>
+                        <span class="text-xs text-slate-400">无处不在的</span>
+                    </div>
+                    <div class="min-w-[140px] h-32 bg-slate-800/50 rounded-xl p-4 flex flex-col justify-between border border-slate-700 hover:border-vocab transition">
+                        <span class="text-lg font-bold text-white">Pragmatic</span>
+                        <span class="text-xs text-slate-400">务实的</span>
+                    </div>
+                    <div class="min-w-[140px] h-32 flex items-center justify-center rounded-xl border border-dashed border-slate-600 text-slate-500 hover:text-vocab hover:border-vocab transition">
+                        <span class="text-sm">继续加载</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl lg:col-span-4 flex flex-col justify-center items-center text-center relative">
+                <h3 class="text-slate-400 text-sm uppercase mb-4">记忆留存率</h3>
+                <div class="relative w-32 h-32">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" stroke="#1e293b" stroke-width="8" fill="none"></circle>
+                        <circle cx="50" cy="50" r="40" stroke="#38bdf8" stroke-width="8" fill="none" stroke-dasharray="251.2" stroke-dashoffset="60" stroke-linecap="round"></circle>
+                    </svg>
+                    <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
+                        <span class="text-2xl font-bold text-white">76%</span>
+                        <span class="text-[10px] text-slate-400">优秀</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl md:col-span-1 lg:col-span-4 hover:bg-listen/5 transition cursor-pointer group">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-listen/20 text-listen group-hover:scale-110 transition">
+                        <i class="fa-solid fa-tower-broadcast"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white">信号截获 (Listening)</h3>
+                        <p class="text-xs text-slate-400">BBC News / 2023真题</p >
+                    </div>
+                </div>
+                <div class="flex items-end gap-1 h-12 justify-center opacity-70">
+                    <div class="w-1 bg-listen h-4 animate-[pulse_1s_ease-in-out_infinite]"></div>
+                    <div class="w-1 bg-listen h-8 animate-[pulse_1.2s_ease-in-out_infinite]"></div>
+                    <div class="w-1 bg-listen h-10 animate-[pulse_0.8s_ease-in-out_infinite]"></div>
+                    <div class="w-1 bg-listen h-6 animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+                    <div class="w-1 bg-listen h-9 animate-[pulse_1.1s_ease-in-out_infinite]"></div>
+                </div>
+                <button class="w-full mt-4 py-2 rounded-lg bg-slate-800 text-xs text-slate-300 hover:text-white hover:bg-slate-700">继续播放</button>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl md:col-span-1 lg:col-span-4 hover:bg-read/5 transition cursor-pointer group">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-read/20 text-read group-hover:scale-110 transition">
+                        <i class="fa-solid fa-glasses"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white">档案解密 (Reading)</h3>
+                        <p class="text-xs text-slate-400">经济学人精读</p >
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="h-2 w-full bg-slate-700 rounded-full overflow-hidden">
+                        <div class="h-full bg-read w-2/3"></div>
+                    </div>
+                    <p class="text-xs text-slate-400 flex justify-between">
+                        <span>The AI Revolution...</span>
+                        <span>65%</span>
+                    </p >
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <span class="px-2 py-1 rounded text-[10px] border border-slate-600 text-slate-400">长难句分析</span>
+                    <span class="px-2 py-1 rounded text-[10px] border border-slate-600 text-slate-400">逻辑链</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl md:col-span-2 lg:col-span-4 hover:bg-write/5 transition cursor-pointer group">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-write/20 text-write group-hover:scale-110 transition">
+                        <i class="fa-solid fa-pen-fancy"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white">结构实验室 (Writing)</h3>
+                        <p class="text-xs text-slate-400">大作文模版 / 语法纠错</p >
+                    </div>
+                </div>
+                <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                    <p class="text-xs text-slate-300 font-mono leading-relaxed">
+                        <span class="text-red-400 line-through">As far as I am concerned</span> 
+                        <span class="text-green-400">From my perspective</span>, 
+                        technology acts as a double-edged sword...
+                    </p >
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-6 glass-card p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-r from-slate-800 to-slate-900/50">
+            <div class="max-w-2xl">
+                <p class="text-lg md:text-xl font-serif italic text-slate-300">"The roots of education are bitter, but the fruit is sweet."</p >
+                <p class="text-sm text-slate-500 mt-2">— Aristotle</p >
+            </div>
+            <button class="bg-accent text-slate-900 font-bold px-6 py-3 rounded-xl hover:bg-white hover:scale-105 transition shadow-[0_0_20px_rgba(56,189,248,0.3)]">
+                开始今日特训
+            </button>
+        </div>
+
+    </main>
+
+</body>
+</html>
