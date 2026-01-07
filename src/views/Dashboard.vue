@@ -1,11 +1,10 @@
 <script setup>
-// 导入组件
-import VocabularyCard from '../components/VocabularyCard.vue'
-import MemoryRetention from '../components/MemoryRetention.vue'
-import ListeningCard from '../components/ListeningCard.vue'
-import ReadingCard from '../components/ReadingCard.vue'
-import WritingCard from '../components/WritingCard.vue'
-import MotivationalQuote from '../components/MotivationalQuote.vue'
+import VocabularyCard from '../components/cards/VocabularyCard.vue'
+import MemoryRetention from '../components/cards/MemoryRetention.vue'
+import ListeningCard from '../components/cards/ListeningCard.vue'
+import ReadingCard from '../components/cards/ReadingCard.vue'
+import WritingCard from '../components/cards/WritingCard.vue'
+import MotivationalQuote from '../components/cards/MotivationalQuote.vue'
 import { useWordManagementStore } from '../stores/wordManagement.js'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'

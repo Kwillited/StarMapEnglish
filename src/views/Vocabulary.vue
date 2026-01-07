@@ -1,6 +1,6 @@
 <script setup>
 // 词汇学习页面
-import WordCard from '../components/WordCard.vue';
+import WordCard from '../components/cards/WordCard.vue';
 import { useWordManagementStore } from '../stores/wordManagement.js';
 import { ref, onMounted, computed, watch } from 'vue';
 

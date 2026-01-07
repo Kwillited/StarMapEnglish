@@ -1,5 +1,6 @@
 <script setup>
 // DashboardCard基础组件
+import { defineProps } from 'vue'
 const props = defineProps({
   title: {
     type: String,

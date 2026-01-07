@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue'
-import { useWordManagementStore } from '../stores/wordManagement.js'
+import { useWordManagementStore } from '../../stores/wordManagement.js'
 
 // 定义属性
 const props = defineProps({

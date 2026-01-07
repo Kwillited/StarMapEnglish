@@ -1,9 +1,9 @@
 <script setup>
 // 导入组件
-import NavBar from './components/NavBar.vue'
-import PageHeader from './components/PageHeader.vue'
-import StarBackground from './components/StarBackground.vue'
-import ReviewModal from './components/ReviewModal.vue'
+import NavBar from './components/navigation/NavBar.vue'
+import PageHeader from './components/layout/PageHeader.vue'
+import StarBackground from './components/layout/StarBackground.vue'
+import ReviewModal from './components/modals/ReviewModal.vue'
 import { useRoute } from 'vue-router'
 import { useWordManagementStore } from './stores/wordManagement.js'
 import { useUserStore } from './stores/userStore.js'
