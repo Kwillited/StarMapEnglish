@@ -197,5 +197,4 @@ MIT License
 
 如有问题或建议，欢迎通过以下方式联系：
 
-- 项目地址：https://github.com/yourusername/StarMapEnglish
-- 邮箱：your.email@example.com
+- 邮箱：kwillited@gmail.com
