@@ -7,11 +7,23 @@ const Reading = () => import('../views/Reading.vue');
 const Listening = () => import('../views/Listening.vue');
 const Writing = () => import('../views/Writing.vue');
 const Settings = () => import('../views/Settings.vue');
+const Login = () => import('../views/Login.vue');
+const Register = () => import('../views/Register.vue');
 
 // 创建路由实例
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register
+    },
     {
       path: '/',
       name: 'Dashboard',

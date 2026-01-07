@@ -42,8 +42,8 @@ const toggleCustomInput = () => {
 
 // 预设学习计划
 const presetPlans = [
-  { name: '轻松模式', count: 30 },
-  { name: '标准模式', count: 50 },
+  { id: 1, name: '轻松模式', count: 30 },
+  { id: 2, name: '标准模式', count: 50 },
   { id: 3, name: '高效模式', count: 80 },
   { id: 4, name: '冲刺模式', count: 120 }
 ];
@@ -53,6 +53,8 @@ const applyPresetPlan = (count) => {
   settings.value.vocabulary.dailyWords = count;
 };
 
+import * as XLSX from 'xlsx';
+
 // 导入导出功能
 const handleImport = (event) => {
   const file = event.target.files[0];
@@ -60,7 +62,30 @@ const handleImport = (event) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const data = JSON.parse(e.target.result);
+        let data;
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        
+        if (fileExt === 'json') {
+          // 处理JSON文件
+          data = JSON.parse(e.target.result);
+        } else if (['xlsx', 'xls'].includes(fileExt)) {
+          // 处理Excel文件
+          const workbook = XLSX.read(e.target.result, { type: 'array' });
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+          
+          // 将Excel数据转换为应用所需格式
+          data = {
+            vocabulary: {
+              ...settings.value.vocabulary,
+              // 假设Excel中包含单词列表等数据
+              words: jsonData
+            }
+          };
+        } else {
+          throw new Error('不支持的文件格式');
+        }
+        
         // 这里可以添加导入逻辑
         console.log('导入的数据:', data);
         alert('词汇导入成功！');
@@ -69,9 +94,17 @@ const handleImport = (event) => {
         alert('导入失败，请检查文件格式是否正确！');
       }
     };
-    reader.readAsText(file);
+    
+    if (file.name.split('.').pop().toLowerCase() === 'json') {
+      reader.readAsText(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
   }
 };
+
+// 导出格式选择
+const exportFormat = ref('json'); // json, xlsx
 
 const handleExport = () => {
   // 这里可以添加导出逻辑
@@ -79,14 +112,40 @@ const handleExport = () => {
     vocabulary: settings.value.vocabulary,
     exportedAt: new Date().toISOString()
   };
-  const dataStr = JSON.stringify(exportData, null, 2);
-  const dataBlob = new Blob([dataStr], { type: 'application/json' });
-  const url = URL.createObjectURL(dataBlob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'vocabulary-settings.json';
-  link.click();
-  URL.revokeObjectURL(url);
+  
+  if (exportFormat.value === 'json') {
+    // 导出为JSON
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'vocabulary-settings.json';
+    link.click();
+    URL.revokeObjectURL(url);
+  } else if (exportFormat.value === 'xlsx') {
+    // 导出为Excel
+    // 准备Excel数据 - 这里根据需要调整数据结构
+    const excelData = [
+      // 设置信息
+      [{ v: '词汇学习设置', s: { bold: true, colspan: 2 } }],
+      [{ v: '选择词汇本', s: { bold: true } }, { v: exportData.vocabulary.selectedBook }],
+      [{ v: '每日学习单词数', s: { bold: true } }, { v: exportData.vocabulary.dailyWords }],
+      [{ v: '复习间隔（天）', s: { bold: true } }, { v: exportData.vocabulary.reviewInterval }],
+      [{ v: '显示发音', s: { bold: true } }, { v: exportData.vocabulary.showPronunciation ? '是' : '否' }],
+      [{ v: '自动播放音频', s: { bold: true } }, { v: exportData.vocabulary.autoPlayAudio ? '是' : '否' }],
+      [{ v: '导出时间', s: { bold: true } }, { v: new Date().toLocaleString() }],
+    ];
+    
+    // 创建工作簿和工作表
+    const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, '词汇设置');
+    
+    // 导出文件
+    XLSX.writeFile(workbook, 'vocabulary-settings.xlsx');
+  }
+  
   console.log('导出的数据:', exportData);
 };
 
@@ -395,7 +454,7 @@ const settings = ref({
                     <input 
                       type="file" 
                       id="importFile" 
-                      accept=".json" 
+                      accept=".json, .xlsx, .xls" 
                       class="hidden"
                       @change="handleImport"
                     />
@@ -407,12 +466,24 @@ const settings = ref({
                       选择文件
                     </label>
                   </div>
-                  <p class="text-xs text-slate-500 mt-1">支持JSON格式的词汇设置文件</p>
+                  <p class="text-xs text-slate-500 mt-1">支持JSON、Excel(.xlsx)和Excel 97-2003(.xls)格式的词汇设置文件</p>
                 </div>
                 
                 <!-- 导出按钮 -->
                 <div class="flex-1">
                   <label class="block text-slate-400 text-sm mb-2">导出词汇设置</label>
+                  
+                  <!-- 导出格式选择 -->
+                  <div class="mb-2">
+                    <select 
+                      v-model="exportFormat"
+                      class="bg-slate-700/50 border border-slate-600 rounded px-3 py-1 text-white text-sm w-full"
+                    >
+                      <option value="json">JSON格式</option>
+                      <option value="xlsx">Excel格式</option>
+                    </select>
+                  </div>
+                  
                   <button 
                     @click="handleExport"
                     class="w-full bg-vocab hover:bg-vocab/90 text-white px-4 py-2 rounded-full transition-colors text-sm flex items-center justify-center"
@@ -420,7 +491,7 @@ const settings = ref({
                     <i class="fa-solid fa-file-export mr-1"></i>
                     导出设置
                   </button>
-                  <p class="text-xs text-slate-500 mt-1">导出当前词汇设置为JSON文件</p>
+                  <p class="text-xs text-slate-500 mt-1">导出当前词汇设置</p>
                 </div>
               </div>
             </div>

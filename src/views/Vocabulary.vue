@@ -123,10 +123,10 @@ wordStore.initializeTotalReviewWords();
         <!-- 复习轮次部分 -->
         <div class="flex-1">
           <!-- 轮次显示 -->
-          <div class="flex justify-between items-center mb-2">
-            <h4 class="text-sm text-slate-400">复习轮次</h4>
-            <span class="text-sm text-white">{{ wordStore.currentRound }} / {{ wordStore.maxRounds }}</span>
-          </div>
+            <div class="flex justify-between items-center mb-2">
+              <h4 class="text-sm text-slate-400">复习轮次</h4>
+              <span class="text-sm text-white">{{ Math.min(wordStore.currentRound, wordStore.maxRounds) }} / {{ wordStore.maxRounds }}</span>
+            </div>
           <!-- 轮次进度条 -->
           <div class="w-full bg-slate-700/50 rounded-full h-2">
             <div 
@@ -160,7 +160,7 @@ wordStore.initializeTotalReviewWords();
           <!-- 学习轮次 -->
           <div class="flex justify-between items-center mb-2">
             <h4 class="text-sm text-slate-400">学习轮次</h4>
-            <span class="text-sm text-white">{{ wordStore.currentLearningRound }} / {{ wordStore.maxLearningRounds }}</span>
+            <span class="text-sm text-white">{{ Math.min(wordStore.currentLearningRound, wordStore.maxLearningRounds) }} / {{ wordStore.maxLearningRounds }}</span>
           </div>
           <!-- 学习轮次进度条 -->
           <div class="w-full bg-slate-700/50 rounded-full h-2">
@@ -188,25 +188,44 @@ wordStore.initializeTotalReviewWords();
         </div>
       </div>
       
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-white">
-          {{ wordStore.studyMode === 'review' ? '复习单词' : '单词列表' }} 
-          <span class="text-slate-400 text-sm font-normal">
-            ({{ wordStore.studyMode === 'review' ? wordStore.filteredReviewWords.length : wordStore.filteredWords.length }} 个单词)
-          </span>
-        </h3>
+      <div class="flex flex-col gap-4">
+        <!-- 浏览模式下的高频单词推荐标题和描述 -->
+        <div v-if="wordStore.studyMode === 'browse'">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-white">
+              高频单词推荐 
+              <span class="text-slate-400 text-sm font-normal">
+                ({{ wordStore.filteredWords.length }} 个单词)
+              </span>
+            </h3>
+          </div>
+          <p class="text-sm text-slate-400 mt-1">
+            精选考试高频单词，助您高效备考。点击单词卡片可查看释义，收藏按钮可将单词添加到复习列表。
+          </p>
+          
+
+        </div>
         
-        <!-- 功能按钮 -->
-        <div class="flex gap-2">
-          <!-- 统一的切换释义按钮 -->
-          <button 
-            v-if="['study', 'review'].includes(wordStore.studyMode)"
-            @click="wordStore.toggleMeaning"
-            class="px-4 py-2 bg-slate-800/50 text-sm rounded-full hover:bg-slate-700/50 transition-colors"
-          >
-            <i class="fa-solid fa-eye mr-1"></i>
-            {{ wordStore.studyMode === 'study' ? (wordStore.showAllMeanings ? '隐藏全部释义' : '显示全部释义') : '切换全部释义' }}
-          </button>
+        <!-- 其他模式下的标题和功能按钮 -->
+        <div v-else class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-white">
+            {{ wordStore.studyMode === 'review' ? '复习单词' : '单词列表' }} 
+            <span class="text-slate-400 text-sm font-normal">
+              ({{ wordStore.studyMode === 'review' ? wordStore.filteredReviewWords.length : wordStore.filteredWords.length }} 个单词)
+            </span>
+          </h3>
+          
+          <!-- 功能按钮 -->
+          <div class="flex gap-2">
+            <!-- 统一的切换释义按钮 -->
+            <button 
+              @click="wordStore.toggleMeaning"
+              class="px-4 py-2 bg-slate-800/50 text-sm rounded-full hover:bg-slate-700/50 transition-colors"
+            >
+              <i class="fa-solid fa-eye mr-1"></i>
+              {{ wordStore.studyMode === 'study' ? (wordStore.showAllMeanings ? '隐藏全部释义' : '显示全部释义') : '切换全部释义' }}
+            </button>
+          </div>
         </div>
       </div>
       
