@@ -153,8 +153,8 @@ wordStore.initializeTotalReviewWords();
         </div>
       </div>
       
-      <!-- 学习进度（非复习模式） -->
-      <div v-else class="mb-4 flex flex-col md:flex-row gap-6">
+      <!-- 学习进度（仅学习模式） -->
+      <div v-else-if="wordStore.studyMode === 'study'" class="mb-4 flex flex-col md:flex-row gap-6">
         <!-- 学习轮次部分 -->
         <div class="flex-1">
           <!-- 学习轮次 -->
