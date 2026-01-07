@@ -37,7 +37,7 @@
       </router-link>
     </div>
 
-    <router-link to="/settings" class="hidden md:block md:mt-auto md:mb-6 text-slate-400 hover:text-white group relative">
+    <router-link to="/settings" class="hidden md:block md:mt-auto md:mb-6 text-xl text-slate-400 hover:text-white group relative">
       <i class="fa-solid fa-gear"></i>
       <span class="hidden md:block absolute left-12 top-1/2 -translate-y-1/2 bg-slate-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">设置</span>
     </router-link>
