@@ -33,45 +33,4 @@ const route = useRoute()
   </div>
 </template>
 
-<style>
-/* 全局样式 - 应用于整个页面 */
-body {
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
 
-/* 自定义颜色变量 */
-:root {
-  --accent: #38bdf8;
-  --vocab: #818cf8;
-  --read: #34d399;
-  --listen: #fbbf24;
-  --write: #f472b6;
-}
-
-/* 玻璃拟态卡片效果 */
-.glass-card {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.glass-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(56, 189, 248, 0.5);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-}
-
-/* 隐藏滚动条 */
-.hide-scrollbar {
-  scrollbar-width: none;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-</style>

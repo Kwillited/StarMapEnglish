@@ -323,7 +323,7 @@ const settings = ref({
                 <!-- 预设计划 -->
                 <div>
                   <span class="text-xs text-slate-400 block mb-2">预设计划:</span>
-                  <div class="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                  <div class="flex flex-col sm:flex-row gap-2 sm:overflow-x-auto sm:pb-2">
                     <button 
                       v-for="plan in presetPlans" 
                       :key="plan.name"

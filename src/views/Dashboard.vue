@@ -1,10 +1,10 @@
 <script setup>
 // 导入组件
-import VocabularyReactor from '../components/VocabularyReactor.vue'
+import VocabularyCard from '../components/VocabularyCard.vue'
 import MemoryRetention from '../components/MemoryRetention.vue'
-import SignalInterception from '../components/SignalInterception.vue'
-import FileDecryption from '../components/FileDecryption.vue'
-import StructureLab from '../components/StructureLab.vue'
+import ListeningCard from '../components/ListeningCard.vue'
+import ReadingCard from '../components/ReadingCard.vue'
+import WritingCard from '../components/WritingCard.vue'
 import MotivationalQuote from '../components/MotivationalQuote.vue'
 
 // 定义组件数据
@@ -47,19 +47,19 @@ const continuePlaying = () => {
   <!-- 内容网格 -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 mt-8">
     <!-- 单词反应堆组件 -->
-    <VocabularyReactor :vocabulary-progress="vocabularyProgress" />
+    <VocabularyCard :vocabulary-progress="vocabularyProgress" />
 
     <!-- 记忆留存率组件 -->
     <MemoryRetention :memory-retention="memoryRetention" />
 
     <!-- 信号截获 (听力) 组件 -->
-    <SignalInterception @continue-playing="continuePlaying" />
+    <ListeningCard @continue-playing="continuePlaying" />
 
     <!-- 档案解密 (阅读) 组件 -->
-    <FileDecryption :reading-progress="readingProgress" />
+    <ReadingCard :reading-progress="readingProgress" />
 
     <!-- 结构实验室 (写作) 组件 -->
-    <StructureLab />
+    <WritingCard />
 
   </div>
 </template>

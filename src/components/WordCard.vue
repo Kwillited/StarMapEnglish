@@ -79,7 +79,7 @@ const priorityClass = computed(() => {
   <div class="bg-slate-800/50 p-4 rounded-lg hover:border-vocab/50 border border-slate-700 transition-all">
     <div class="flex justify-between items-start">
       <h4 class="text-xl font-bold text-white">{{ word.word }}</h4>
-      <div class="flex gap-1">
+      <div class="flex gap-1 items-center">
         <span 
           :class="['text-xs px-2 py-1 rounded-full', difficultyClass]"
         >
@@ -91,6 +91,13 @@ const priorityClass = computed(() => {
         >
           {{ priorityLabel }}
         </span>
+        <button 
+          v-else
+          class="ml-1 text-slate-400 hover:text-yellow-400 transition-colors"
+          title="添加到复习列表"
+        >
+          <i class="fa-solid fa-bookmark"></i>
+        </button>
       </div>
     </div>
     
@@ -110,39 +117,32 @@ const priorityClass = computed(() => {
       </div>
     </div>
     
-    <!-- 复习模式操作按钮 -->
-    <div v-if="studyMode === 'review'" class="mt-4 flex justify-between items-center">
-      <span class="text-xs text-vocab bg-vocab/20 px-2 py-1 rounded-full">{{ word.category }}</span>
-      <div class="flex gap-2">
+    <!-- 统一的操作按钮 -->
+    <div class="mt-3 flex justify-end">
+      <div class="flex gap-3">
         <button 
           @click="handleCompleteReview('mastered')"
-          class="bg-green-500/20 hover:bg-green-500/30 text-green-400 px-3 py-1 rounded-full text-sm transition-colors"
+          class="bg-green-500/20 hover:bg-green-500/30 text-green-400 px-4 py-1.5 rounded-full text-sm transition-all duration-200 transform hover:scale-105"
+          :title="studyMode !== 'review' ? '记住' : ''"
         >
           <i class="fa-solid fa-check mr-1"></i>
-          已掌握
+          记住
         </button>
         <button 
           @click="handleCompleteReview('forgot')"
-          class="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-3 py-1 rounded-full text-sm transition-colors"
+          class="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-1.5 rounded-full text-sm transition-all duration-200 transform hover:scale-105"
+          :title="studyMode !== 'review' ? '不认识' : ''"
         >
           <i class="fa-solid fa-times mr-1"></i>
-          忘记
+          {{ studyMode === 'review' ? '忘记' : '不认识' }}
         </button>
-      </div>
-    </div>
-    
-    <!-- 浏览和学习模式操作按钮 -->
-    <div v-else class="mt-3 flex justify-between items-center">
-      <span class="text-xs text-vocab bg-vocab/20 px-2 py-1 rounded-full">{{ word.category }}</span>
-      <div class="flex gap-1">
-        <button class="text-slate-400 hover:text-green-400 transition-colors" title="标记为已掌握">
-          <i class="fa-solid fa-check-circle"></i>
-        </button>
-        <button class="text-slate-400 hover:text-yellow-400 transition-colors" title="添加到复习列表">
-          <i class="fa-solid fa-bookmark"></i>
-        </button>
-        <button class="text-slate-400 hover:text-red-400 transition-colors" title="不认识">
-          <i class="fa-solid fa-times-circle"></i>
+        <button 
+          @click="handleCompleteReview('fuzzy')"
+          class="bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 px-4 py-1.5 rounded-full text-sm transition-all duration-200 transform hover:scale-105"
+          :title="studyMode !== 'review' ? '模糊' : ''"
+        >
+          <i class="fa-solid fa-question mr-1"></i>
+          模糊
         </button>
       </div>
     </div>

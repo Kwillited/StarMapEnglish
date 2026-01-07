@@ -30,6 +30,11 @@
         <i class="fa-solid fa-pen-nib"></i>
         <span class="hidden md:block absolute left-14 top-1/2 -translate-y-1/2 bg-slate-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">写作学习</span>
       </router-link>
+      <!-- 小屏模式下的设置按钮 -->
+      <router-link to="/settings" class="md:hidden hover:text-white transition group relative">
+        <i class="fa-solid fa-gear"></i>
+        <span class="hidden md:block absolute left-14 top-1/2 -translate-y-1/2 bg-slate-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">设置</span>
+      </router-link>
     </div>
 
     <router-link to="/settings" class="hidden md:block md:mt-auto md:mb-8 text-slate-400 hover:text-white group relative">
