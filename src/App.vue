@@ -107,7 +107,7 @@ onUnmounted(() => {
         <NavBar />
 
         <!-- 主内容区 -->
-        <main class="flex-1 p-2 md:p-8 lg:p-12 overflow-y-auto pb-16 md:pb-8 h-full">
+        <main class="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto pb-20 md:pb-12 h-full">
           
           <!-- 页面头部组件 - 只在控制台页面显示 -->
           <PageHeader v-if="route.path === '/'" :user="userStore.userInfo" class="mb-6" />

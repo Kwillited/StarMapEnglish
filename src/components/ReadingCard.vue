@@ -22,20 +22,20 @@ const props = defineProps({
   >
     <template #content>
       <div class="space-y-2">
-        <div class="h-2 w-full bg-slate-700 rounded-full overflow-hidden">
+        <div class="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
           <div class="h-full bg-read" :style="{ width: `${readingProgress.percentage}%` }"></div>
         </div>
         <p class="text-xs text-slate-400 flex justify-between">
-          <span>{{ readingProgress.title }}</span>
+          <span class="truncate">{{ readingProgress.title }}</span>
           <span>{{ readingProgress.percentage }}%</span>
         </p>
       </div>
     </template>
     
     <template #actions>
-      <div class="mt-4 flex gap-2">
-        <span class="px-2 py-1 rounded text-[10px] border border-slate-600 text-slate-400">长难句分析</span>
-        <span class="px-2 py-1 rounded text-[10px] border border-slate-600 text-slate-400">逻辑链</span>
+      <div class="mt-3 flex gap-1.5">
+        <span class="px-1.5 py-1 rounded text-[10px] border border-slate-600 text-slate-400">长难句分析</span>
+        <span class="px-1.5 py-1 rounded text-[10px] border border-slate-600 text-slate-400">逻辑链</span>
       </div>
     </template>
   </DashboardCard>

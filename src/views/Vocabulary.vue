@@ -63,7 +63,7 @@ const nextWord = () => {
               ]"
               @click="wordStore.toggleStudyMode('browse')"
             >
-              浏览
+              数据
             </button>
             <button 
               :class="[

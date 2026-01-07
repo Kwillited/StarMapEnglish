@@ -34,14 +34,14 @@ const props = defineProps({
 
 <template>
   <!-- Dashboard卡片基础组件 -->
-  <div :class="['glass-card p-6 rounded-3xl', colSpan, hoverColorClass, 'transition cursor-pointer group']">
+  <div :class="['glass-card p-4 sm:p-6 rounded-2xl md:rounded-3xl', colSpan, hoverColorClass, 'transition cursor-pointer group']">
     <!-- 标题区域 -->
-    <div class="flex items-center gap-3 mb-4">
-      <div :class="['p-3 rounded-lg', bgColorClass, colorClass, 'group-hover:scale-110 transition']">
-        <i :class="icon"></i>
+    <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+      <div :class="['p-2 sm:p-3 rounded-lg', bgColorClass, colorClass, 'group-hover:scale-110 transition']">
+        <i :class="icon" class="text-sm sm:text-base"></i>
       </div>
       <div class="flex flex-col">
-        <h3 class="font-bold text-white">{{ title }}</h3>
+        <h3 class="font-bold text-white text-base sm:text-lg">{{ title }}</h3>
         <p v-if="subtitle" class="text-xs text-slate-400">{{ subtitle }}</p>
       </div>
     </div>

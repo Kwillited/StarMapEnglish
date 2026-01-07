@@ -76,7 +76,7 @@ const continuePlaying = () => {
   <MotivationalQuote @start-training="startTraining" />
 
   <!-- 内容网格 -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 mt-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-6 mt-4 sm:mt-8">
     <!-- 单词反应堆组件 -->
     <VocabularyCard :vocabulary-progress="vocabularyProgress" />
 

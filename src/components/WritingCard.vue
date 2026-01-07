@@ -15,8 +15,8 @@ import DashboardCard from './DashboardCard.vue';
     col-span="md:col-span-2 lg:col-span-4"
   >
     <template #content>
-      <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
-        <p class="text-xs text-slate-300 font-mono leading-relaxed">
+      <div class="bg-slate-900/50 p-2 sm:p-3 rounded-lg border border-slate-700/50">
+        <p class="text-xs text-slate-300 font-mono leading-relaxed whitespace-pre-wrap break-words">
           <span class="text-red-400 line-through">As far as I am concerned</span> 
           <span class="text-green-400">From my perspective</span>, 
           technology acts as a double-edged sword...

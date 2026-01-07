@@ -133,13 +133,13 @@ onMounted(() => {
   >
     <!-- 图表切换按钮 -->
     <template #actions>
-      <div class="flex justify-center mb-4">
+      <div class="flex justify-center mb-3 sm:mb-4">
         <button 
           @click="toggleChartType"
-          class="flex items-center gap-1 px-3 py-1 text-xs bg-slate-800/50 hover:bg-slate-700/50 rounded-full transition-colors"
+          class="flex items-center gap-1 px-2 py-1 text-xs bg-slate-800/50 hover:bg-slate-700/50 rounded-full transition-colors text-center"
         >
-          <i :class="chartType === 'circle' ? 'fa-solid fa-chart-line' : 'fa-solid fa-chart-pie'" class="text-accent"></i>
-          <span>{{ chartType === 'circle' ? '切换到折线图' : '切换到环形图' }}</span>
+          <i :class="chartType === 'circle' ? 'fa-solid fa-chart-line' : 'fa-solid fa-chart-pie'" class="text-accent text-xs"></i>
+          <span class="text-[10px]">{{ chartType === 'circle' ? '切换到折线图' : '切换到环形图' }}</span>
         </button>
       </div>
     </template>
@@ -147,19 +147,19 @@ onMounted(() => {
     <!-- 内容区域 -->
     <template #content>
       <!-- 环形图 -->
-      <div v-if="chartType === 'circle'" class="relative w-32 h-32 mx-auto">
+      <div v-if="chartType === 'circle'" class="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto">
         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="40" stroke="#1e293b" stroke-width="8" fill="none"></circle>
           <circle cx="50" cy="50" r="40" stroke="#38bdf8" stroke-width="8" fill="none" :stroke-dasharray="circumference" :stroke-dashoffset="offset" stroke-linecap="round"></circle>
         </svg>
         <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
-          <span class="text-2xl font-bold text-white">{{ memoryRetention.percentage }}%</span>
+          <span class="text-xl sm:text-2xl font-bold text-white">{{ memoryRetention.percentage }}%</span>
           <span class="text-[10px] text-slate-400">{{ memoryRetention.rating }}</span>
         </div>
       </div>
       
       <!-- 折线图 -->
-      <div v-else class="w-full h-40">
+      <div v-else class="w-full h-36 sm:h-40">
         <canvas ref="chartRef"></canvas>
       </div>
     </template>
