@@ -1,6 +1,6 @@
 <script setup>
 // 单词卡片组件
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
   word: {
@@ -22,6 +22,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['toggle-meaning', 'complete-review']);
+
+// 收藏状态
+const isFavorited = ref(false);
+
+// 切换收藏状态
+const toggleFavorite = () => {
+  isFavorited.value = !isFavorited.value;
+};
 
 // 计算是否显示释义
 const isMeaningVisible = computed(() => {
@@ -97,6 +105,16 @@ const priorityClass = computed(() => {
           title="添加到复习列表"
         >
           <i class="fa-solid fa-bookmark"></i>
+        </button>
+        <!-- 收藏按钮 -->
+        <button 
+          class="ml-2 text-slate-400 hover:text-red-400 transition-colors"
+          :class="{ 'text-red-400': isFavorited }"
+          title="收藏单词"
+          @click="toggleFavorite"
+        >
+          <i :class="isFavorited ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"
+        ></i>
         </button>
       </div>
     </div>
