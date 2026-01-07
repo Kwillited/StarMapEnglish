@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const email = ref('')
+const phone = ref('')
 const password = ref('')
 const error = ref('')
 const stars = ref([])
@@ -48,14 +48,43 @@ onUnmounted(() => {
   clearTimeout(animationFrame)
 })
 
-const handleLogin = () => {
-  if (!email.value || !password.value) {
+const handleLogin = async () => {
+  if (!phone.value || !password.value) {
     error.value = '请填写完整的登录信息'
     return
   }
   
-  error.value = ''
-  router.push('/')
+  // 手机号格式验证
+  const phoneRegex = /^1[3-9]\d{9}$/
+  if (!phoneRegex.test(phone.value)) {
+    error.value = '请输入有效的手机号码'
+    return
+  }
+  
+  try {
+    // 调用登录API
+    const response = await fetch('http://localhost:3000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        phone: phone.value,
+        password: password.value
+      })
+    })
+    
+    const result = await response.json()
+    
+    if (response.ok) {
+      error.value = ''
+      router.push('/')
+    } else {
+      error.value = result.error || '登录失败'
+    }
+  } catch (err) {
+    error.value = '网络错误，请稍后重试'
+  }
 }
 </script>
 
@@ -108,16 +137,16 @@ const handleLogin = () => {
       <div class="glass-card rounded-xl sm:rounded-3xl p-4 sm:p-8 backdrop-blur-xl">
         <form @submit.prevent="handleLogin" class="space-y-3 sm:space-y-6">
           <div class="group">
-            <label for="email" class="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2 ml-0.5 sm:ml-1 transition-colors group-focus-within:text-accent">邮箱</label>
+            <label for="phone" class="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2 ml-0.5 sm:ml-1 transition-colors group-focus-within:text-accent">手机号</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-2.5 sm:pl-4 flex items-center pointer-events-none">
-                <i class="fa-regular fa-envelope text-slate-500 text-xs sm:text-base group-focus-within:text-accent transition-colors"></i>
+                <i class="fa-solid fa-phone text-slate-500 text-xs sm:text-base group-focus-within:text-accent transition-colors"></i>
               </div>
               <input 
-                type="email" 
-                id="email" 
-                v-model="email"
-                placeholder="your@email.com" 
+                type="tel" 
+                id="phone" 
+                v-model="phone"
+                placeholder="13800138000" 
                 class="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg sm:rounded-xl pl-8 sm:pl-11 pr-2.5 sm:pr-4 py-2 sm:py-4 text-xs sm:text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all duration-300"
               />
             </div>

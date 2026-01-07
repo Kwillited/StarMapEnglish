@@ -1,7 +1,8 @@
 <script setup>
 // 设置页面
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useWordManagementStore } from '../stores/wordManagement.js';
+import { useUserStore } from '../stores/userStore.js';
 
 // 选项卡状态管理
 const activeTab = ref('profile'); // profile, vocabulary, reading, listening, writing, general
@@ -13,6 +14,9 @@ const switchTab = (tab) => {
 
 // 使用单词管理 Pinia store
 const wordStore = useWordManagementStore();
+
+// 使用用户状态 Pinia store
+const userStore = useUserStore();
 
 // 词汇本数据
 const vocabularyBooks = ref([]);
@@ -58,6 +62,26 @@ const settings = ref({
     darkMode: true,
     language: 'zh-CN'
   }
+});
+
+// 个人信息数据 - 从 Pinia store 中获取
+const userProfile = computed({
+  get: () => ({
+    id: userStore.userInfo.id,
+    username: userStore.userInfo.username,
+    phone: userStore.userInfo.phone,
+    exam_type: userStore.userInfo.exam_type
+  }),
+  set: (newValue) => {
+    // 这里不需要直接设置，因为我们会通过 saveUserProfile 函数来更新
+  }
+});
+
+// 用于表单绑定的临时数据
+const formData = ref({
+  username: '',
+  phone: '',
+  exam_type: ''
 });
 
 // 调整每日学习单词数量
@@ -206,7 +230,7 @@ const fetchVocabularyBooks = async () => {
 const fetchSettings = async () => {
   try {
     isLoading.value = true;
-    const response = await fetch('http://localhost:3000/api/settings');
+    const response = await fetch(`http://localhost:3000/api/settings/${userStore.userInfo.id}`);
     if (response.ok) {
       const data = await response.json();
       settings.value = data;
@@ -225,7 +249,7 @@ const fetchSettings = async () => {
 // 保存设置到后端
 const saveSettings = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/settings/1', {
+    const response = await fetch(`http://localhost:3000/api/settings/${userStore.userInfo.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -254,10 +278,54 @@ watch(settings, (newSettings) => {
   saveSettings();
 }, { deep: true });
 
+// 从后端获取个人信息
+const fetchUserProfile = async () => {
+  try {
+    // 使用 Pinia store 的方法从后端获取用户信息
+    await userStore.fetchUserInfo();
+    // 更新表单数据
+    formData.value = {
+      username: userStore.userInfo.username,
+      phone: userStore.userInfo.phone,
+      exam_type: userStore.userInfo.exam_type
+    };
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+  }
+};
+
+// 保存个人信息到后端
+const saveUserProfile = async () => {
+  try {
+    const response = await fetch(`http://localhost:3000/api/users/${userStore.userInfo.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData.value)
+    });
+    
+    if (response.ok) {
+      // 更新 Pinia store 中的用户信息
+      userStore.updateUserInfo(formData.value);
+      saveMessage.value = '个人信息保存成功！';
+      setTimeout(() => {
+        saveMessage.value = '';
+      }, 3000);
+    } else {
+      saveMessage.value = '保存失败，请重试';
+    }
+  } catch (error) {
+    console.error('Error saving user profile:', error);
+    saveMessage.value = '保存失败，请检查网络连接';
+  }
+};
+
 // 组件挂载时获取数据
 onMounted(async () => {
   await fetchVocabularyBooks();
   await fetchSettings();
+  await fetchUserProfile();
 });
 </script>
 
@@ -355,11 +423,15 @@ onMounted(async () => {
           <div class="space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-center gap-2">
               <label class="text-slate-400 w-24">用户名</label>
-              <input type="text" class="bg-slate-700/50 border border-slate-600 rounded px-3 py-2 text-white flex-1" value="Alex" />
+              <input type="text" v-model="formData.username" class="bg-slate-700/50 border border-slate-600 rounded px-3 py-2 text-white flex-1" />
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+              <label class="text-slate-400 w-24">手机号</label>
+              <input type="tel" v-model="formData.phone" class="bg-slate-700/50 border border-slate-600 rounded px-3 py-2 text-white flex-1" placeholder="13800138000" />
             </div>
             <div class="flex flex-col sm:flex-row sm:items-center gap-2">
               <label class="text-slate-400 w-24">考试类型</label>
-              <select class="bg-slate-700/50 border border-slate-600 rounded px-3 py-2 text-white flex-1">
+              <select v-model="formData.exam_type" class="bg-slate-700/50 border border-slate-600 rounded px-3 py-2 text-white flex-1">
                 <option>2026考研英语一</option>
                 <option>2026考研英语二</option>
                 <option>大学英语四级</option>
@@ -367,6 +439,12 @@ onMounted(async () => {
                 <option>托福</option>
                 <option>雅思</option>
               </select>
+            </div>
+            <div class="flex justify-end">
+              <button @click="saveUserProfile" class="bg-vocab hover:bg-vocab/90 text-white px-4 py-2 rounded-full transition-colors text-sm">
+                <i class="fa-solid fa-save mr-1"></i>
+                保存修改
+              </button>
             </div>
           </div>
         </div>

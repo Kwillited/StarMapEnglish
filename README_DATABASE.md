@@ -175,6 +175,7 @@ server/
 | id | INT | 主键，自增 |
 | name | VARCHAR(100) | 词汇本名称，唯一 |
 | description | TEXT | 词汇本描述 |
+| word_count | INT | 词汇本中单词数量，自动更新 |
 | created_at | TIMESTAMP | 创建时间 |
 | updated_at | TIMESTAMP | 更新时间，自动更新 |
 
@@ -190,7 +191,18 @@ server/
 | created_at | TIMESTAMP | 创建时间 |
 | updated_at | TIMESTAMP | 更新时间，自动更新 |
 
-### 3. user_settings 表
+### 3. users 表
+| 字段名 | 数据类型 | 描述 |
+|--------|----------|------|
+| id | INT | 主键，自增 |
+| username | VARCHAR(100) | 用户名，唯一 |
+| phone | VARCHAR(20) | 手机号，唯一 |
+| password | VARCHAR(255) | 密码 |
+| exam_type | VARCHAR(100) | 考试类型，默认"大学英语四级" |
+| created_at | TIMESTAMP | 创建时间 |
+| updated_at | TIMESTAMP | 更新时间，自动更新 |
+
+### 4. user_settings 表
 | 字段名 | 数据类型 | 描述 |
 |--------|----------|------|
 | id | INT | 主键，自增 |

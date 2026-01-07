@@ -7,10 +7,13 @@ import ReadingCard from '../components/ReadingCard.vue'
 import WritingCard from '../components/WritingCard.vue'
 import MotivationalQuote from '../components/MotivationalQuote.vue'
 import { useWordManagementStore } from '../stores/wordManagement.js'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 // 使用单词管理 Pinia store
 const wordStore = useWordManagementStore()
+// 路由实例
+const router = useRouter()
 
 // 定义组件数据
 const vocabularyProgress = ref({
@@ -52,14 +55,20 @@ fetchTotalWords();
 
 // 定义组件方法
 const startTraining = () => {
-  console.log('开始今日特训')
-  // 这里可以添加实际的特训开始逻辑
-}
+  console.log('开始今日特训');
+  // 实际的特训开始逻辑
+  
+  // 1. 显示提示信息
+  alert('今日特训开始！\n\n建议学习计划：\n- 词汇学习：30分钟\n- 听力练习：20分钟\n- 阅读训练：30分钟\n\n加油！坚持就是胜利！');
+  
+  // 2. 跳转到词汇学习页面
+  router.push('/vocabulary');
+};
 
 const continuePlaying = () => {
-  console.log('继续播放听力')
+  console.log('继续播放听力');
   // 这里可以添加实际的播放逻辑
-}
+};
 </script>
 
 <template>

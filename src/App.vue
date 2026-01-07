@@ -4,14 +4,8 @@ import NavBar from './components/NavBar.vue'
 import PageHeader from './components/PageHeader.vue'
 import { useRoute } from 'vue-router'
 import { useWordManagementStore } from './stores/wordManagement.js'
-
-// 定义组件数据
-const user = {
-  name: 'Alex',
-  exam: '2026考研英语一',
-  daysLeft: 186,
-  energy: 85
-}
+import { useUserStore } from './stores/userStore.js'
+import { onMounted } from 'vue'
 
 // 获取当前路由
 const route = useRoute()
@@ -19,10 +13,18 @@ const route = useRoute()
 // 获取单词管理store
 const wordStore = useWordManagementStore()
 
+// 获取用户状态store
+const userStore = useUserStore()
+
 // 关闭模态框
 const closeModal = () => {
   wordStore.showReviewModal = false
 }
+
+// 组件挂载时从后端获取用户信息
+onMounted(async () => {
+  await userStore.fetchUserInfo()
+})
 </script>
 
 <template>
@@ -42,7 +44,7 @@ const closeModal = () => {
         <main class="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto pb-24 md:pb-8 h-full">
           
           <!-- 页面头部组件 - 只在控制台页面显示 -->
-          <PageHeader v-if="route.path === '/'" :user="user" class="mb-6" />
+          <PageHeader v-if="route.path === '/'" :user="userStore.userInfo" class="mb-6" />
 
           <!-- 路由视图 -->
           <router-view></router-view>

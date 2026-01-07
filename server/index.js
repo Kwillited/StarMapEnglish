@@ -197,6 +197,210 @@ app.get('/api/settings', async (req, res) => {
   }
 });
 
+// API端点：获取用户信息
+app.get('/api/users/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const [rows] = await pool.query(
+      `SELECT id, username, phone, exam_type FROM users WHERE id = ?`,
+      [userId]
+    );
+    
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      res.status(404).json({ error: '用户未找到' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API端点：更新用户信息
+app.put('/api/users/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { username, phone, exam_type } = req.body;
+    
+    await pool.execute(
+      `UPDATE users SET username = ?, phone = ?, exam_type = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+      [username, phone, exam_type, userId]
+    );
+    
+    res.json({ message: '用户信息更新成功' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API端点：获取当前登录用户信息（示例）
+app.get('/api/current-user', async (req, res) => {
+  try {
+    // 实际应用中，这里应该从JWT令牌或会话中获取用户ID
+    const [rows] = await pool.query(
+      `SELECT id, username, phone, exam_type FROM users WHERE id = ?`,
+      [1] // 默认返回ID为1的用户，实际应用中应该是动态获取
+    );
+    
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      res.status(404).json({ error: '用户未找到' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API端点：用户注册
+app.post('/api/register', async (req, res) => {
+  try {
+    const { username, phone, password, exam_type } = req.body;
+    
+    // 检查手机号是否已存在
+    const [existingUsers] = await pool.query(
+      `SELECT id FROM users WHERE phone = ?`,
+      [phone]
+    );
+    
+    if (existingUsers.length > 0) {
+      return res.status(400).json({ error: '该手机号已被注册' });
+    }
+    
+    // 插入新用户
+    const [result] = await pool.execute(
+      `INSERT INTO users (username, phone, password, exam_type) VALUES (?, ?, ?, ?)`,
+      [username, phone, password, exam_type || '大学英语四级']
+    );
+    
+    // 获取新插入用户的ID
+    const userId = result.insertId;
+    
+    // 为新用户创建默认设置
+    const defaultSettings = {
+      vocabulary: {
+        selectedBook: 1,
+        dailyWords: 50,
+        reviewInterval: 1,
+        showPronunciation: true,
+        autoPlayAudio: false
+      },
+      reading: {
+        dailyArticles: 2,
+        difficulty: 'medium',
+        showTranslation: true,
+        autoHighlight: true
+      },
+      listening: {
+        dailyMinutes: 30,
+        speed: 1,
+        showTranscript: true,
+        autoPlayNext: false
+      },
+      writing: {
+        dailyPractice: 1,
+        topicType: 'mixed',
+        autoCheckGrammar: true,
+        wordLimit: 200
+      },
+      general: {
+        dailyReminder: true,
+        notificationSound: true,
+        darkMode: true,
+        language: 'zh-CN'
+      }
+    };
+    
+    // 插入默认设置到user_settings表
+    await pool.execute(
+      `INSERT INTO user_settings (user_id, vocabulary_settings, reading_settings, listening_settings, writing_settings, general_settings) 
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [userId, JSON.stringify(defaultSettings.vocabulary), JSON.stringify(defaultSettings.reading), 
+       JSON.stringify(defaultSettings.listening), JSON.stringify(defaultSettings.writing), 
+       JSON.stringify(defaultSettings.general)]
+    );
+    
+    res.json({ message: '注册成功' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API端点：用户登录
+app.post('/api/login', async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+    
+    // 检查用户是否存在
+    const [users] = await pool.query(
+      `SELECT id, username, phone, exam_type FROM users WHERE phone = ? AND password = ?`,
+      [phone, password]
+    );
+    
+    if (users.length > 0) {
+      const user = users[0];
+      
+      // 检查是否存在对应的设置记录
+      const [settings] = await pool.query(
+        `SELECT id FROM user_settings WHERE user_id = ?`,
+        [user.id]
+      );
+      
+      if (settings.length === 0) {
+        // 如果没有设置记录，创建默认设置
+        const defaultSettings = {
+          vocabulary: {
+            selectedBook: 1,
+            dailyWords: 50,
+            reviewInterval: 1,
+            showPronunciation: true,
+            autoPlayAudio: false
+          },
+          reading: {
+            dailyArticles: 2,
+            difficulty: 'medium',
+            showTranslation: true,
+            autoHighlight: true
+          },
+          listening: {
+            dailyMinutes: 30,
+            speed: 1,
+            showTranscript: true,
+            autoPlayNext: false
+          },
+          writing: {
+            dailyPractice: 1,
+            topicType: 'mixed',
+            autoCheckGrammar: true,
+            wordLimit: 200
+          },
+          general: {
+            dailyReminder: true,
+            notificationSound: true,
+            darkMode: true,
+            language: 'zh-CN'
+          }
+        };
+        
+        // 插入默认设置到user_settings表
+        await pool.execute(
+          `INSERT INTO user_settings (user_id, vocabulary_settings, reading_settings, listening_settings, writing_settings, general_settings) 
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [user.id, JSON.stringify(defaultSettings.vocabulary), JSON.stringify(defaultSettings.reading), 
+           JSON.stringify(defaultSettings.listening), JSON.stringify(defaultSettings.writing), 
+           JSON.stringify(defaultSettings.general)]
+        );
+      }
+      
+      res.json(user);
+    } else {
+      res.status(401).json({ error: '手机号或密码错误' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // 启动服务器
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

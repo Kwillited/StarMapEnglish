@@ -4,9 +4,10 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const username = ref('')
-const email = ref('')
+const phone = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const termsAgreed = ref(true) // 默认同意服务条款和隐私政策
 const error = ref('')
 const stars = ref([])
 const showStars = ref(false)
@@ -50,9 +51,22 @@ onUnmounted(() => {
   clearTimeout(animationFrame)
 })
 
-const handleRegister = () => {
-  if (!username.value || !email.value || !password.value || !confirmPassword.value) {
+const handleRegister = async () => {
+  if (!username.value || !phone.value || !password.value || !confirmPassword.value) {
     error.value = '请填写完整的注册信息'
+    return
+  }
+  
+  // 验证是否同意服务条款和隐私政策
+  if (!termsAgreed.value) {
+    error.value = '请阅读并同意服务条款和隐私政策'
+    return
+  }
+  
+  // 手机号格式验证
+  const phoneRegex = /^1[3-9]\d{9}$/
+  if (!phoneRegex.test(phone.value)) {
+    error.value = '请输入有效的手机号码'
     return
   }
   
@@ -66,8 +80,32 @@ const handleRegister = () => {
     return
   }
   
-  error.value = ''
-  router.push('/login')
+  try {
+    // 调用注册API
+    const response = await fetch('http://localhost:3000/api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: username.value,
+        phone: phone.value,
+        password: password.value,
+        exam_type: '大学英语四级' // 默认考试类型
+      })
+    })
+    
+    const result = await response.json()
+    
+    if (response.ok) {
+      error.value = ''
+      router.push('/login')
+    } else {
+      error.value = result.error || '注册失败'
+    }
+  } catch (err) {
+    error.value = '网络错误，请稍后重试'
+  }
 }
 </script>
 
@@ -136,16 +174,16 @@ const handleRegister = () => {
           </div>
           
           <div class="group">
-            <label for="email" class="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2 ml-0.5 sm:ml-1 transition-colors group-focus-within:text-accent">邮箱</label>
+            <label for="phone" class="block text-xs sm:text-sm font-medium text-slate-300 mb-1 sm:mb-2 ml-0.5 sm:ml-1 transition-colors group-focus-within:text-accent">手机号</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-2.5 sm:pl-4 flex items-center pointer-events-none">
-                <i class="fa-regular fa-envelope text-slate-500 text-xs sm:text-base group-focus-within:text-accent transition-colors"></i>
+                <i class="fa-solid fa-phone text-slate-500 text-xs sm:text-base group-focus-within:text-accent transition-colors"></i>
               </div>
               <input 
-                type="email" 
-                id="email" 
-                v-model="email"
-                placeholder="your@email.com" 
+                type="tel" 
+                id="phone" 
+                v-model="phone"
+                placeholder="13800138000" 
                 class="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg sm:rounded-xl pl-8 sm:pl-11 pr-2.5 sm:pr-4 py-2 sm:py-4 text-xs sm:text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all duration-300"
               />
             </div>
@@ -187,7 +225,12 @@ const handleRegister = () => {
           </div>
           
           <div class="flex items-start gap-1.5 sm:gap-2 text-xs sm:text-sm">
-            <input type="checkbox" id="terms" class="w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 sm:mt-0.5 rounded border-slate-600 bg-slate-800 text-accent focus:ring-accent/50 flex-shrink-0 cursor-pointer" />
+            <input 
+              type="checkbox" 
+              id="terms" 
+              v-model="termsAgreed"
+              class="w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 sm:mt-0.5 rounded border-slate-600 bg-slate-800 text-accent focus:ring-accent/50 flex-shrink-0 cursor-pointer" 
+            />
             <label for="terms" class="text-slate-400 leading-tight sm:leading-normal">
               <span class="hidden sm:inline">我已阅读并同意</span>
               <span class="sm:hidden">同意</span>

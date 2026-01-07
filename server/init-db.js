@@ -61,6 +61,63 @@ async function createTables() {
     await connection.query(createVocabularyTable);
     console.log('词汇表创建成功');
     
+    // 创建用户表或修改现有表结构
+    let createUsersTable = `
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(100) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        exam_type VARCHAR(100) DEFAULT '大学英语四级',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `;
+    
+    await connection.query(createUsersTable);
+    
+    // 检查并替换email字段为phone字段
+    let hasPhoneColumn = false;
+    try {
+      // 检查email字段是否存在
+      const [columns] = await connection.query('DESCRIBE users');
+      hasPhoneColumn = columns.some(col => col.Field === 'phone');
+      const hasEmailColumn = columns.some(col => col.Field === 'email');
+      
+      if (hasEmailColumn) {
+        // 先将email字段的值复制到phone字段（如果存在）
+        try {
+          // 先添加phone字段，允许NULL值
+          await connection.query('ALTER TABLE users ADD COLUMN phone VARCHAR(20) UNIQUE AFTER username');
+          // 将email值复制到phone字段
+          await connection.query('UPDATE users SET phone = email WHERE phone IS NULL');
+          // 删除email字段上的唯一索引
+          await connection.query('ALTER TABLE users DROP INDEX email');
+          // 删除email字段
+          await connection.query('ALTER TABLE users DROP COLUMN email');
+          // 将phone字段设置为NOT NULL
+          await connection.query('ALTER TABLE users MODIFY COLUMN phone VARCHAR(20) NOT NULL');
+          console.log('email字段替换为phone字段成功');
+        } catch (innerError) {
+          console.error('处理email到phone字段转换失败:', innerError.message);
+          // 如果出现错误，尝试直接添加phone字段（允许NULL）
+          await connection.query('ALTER TABLE users ADD COLUMN phone VARCHAR(20) UNIQUE AFTER username');
+        }
+      } else if (!hasPhoneColumn) {
+        // 添加phone字段，允许NULL值
+        await connection.query('ALTER TABLE users ADD COLUMN phone VARCHAR(20) UNIQUE AFTER username');
+        console.log('添加phone字段成功');
+      }
+      
+      // 确保phone字段存在
+      const [updatedColumns] = await connection.query('DESCRIBE users');
+      hasPhoneColumn = updatedColumns.some(col => col.Field === 'phone');
+    } catch (error) {
+      console.error('处理users表字段失败:', error.message);
+      // 忽略某些错误，继续执行
+    }
+    
+    console.log('用户表创建/更新成功');
+    
     // 创建词汇本单词计数触发器
     // 创建插入触发器
     await connection.query(`
@@ -118,11 +175,43 @@ async function createTables() {
         writing_settings JSON,
         general_settings JSON,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `;
     await connection.query(createUserSettingsTable);
     console.log('用户设置表创建成功');
+    
+    // 创建默认用户或更新现有用户
+    try {
+      // 先检查users表的结构，确认有哪些字段
+      const [columns] = await connection.query('DESCRIBE users');
+      const columnNames = columns.map(col => col.Field);
+      
+      if (columnNames.includes('phone')) {
+        // 如果有phone字段，使用phone创建用户
+        await connection.execute(
+          `INSERT INTO users (username, phone, password, exam_type) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE username = VALUES(username), password = VALUES(password), exam_type = VALUES(exam_type)`,
+          ['Alex', '13800138000', 'password123', '2026考研英语一']
+        );
+      } else if (columnNames.includes('email')) {
+        // 如果只有email字段，使用email创建用户
+        await connection.execute(
+          `INSERT INTO users (username, email, password, exam_type) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE username = VALUES(username), password = VALUES(password), exam_type = VALUES(exam_type)`,
+          ['Alex', 'alex@example.com', 'password123', '2026考研英语一']
+        );
+      } else {
+        // 如果都没有，只使用必填字段创建用户
+        await connection.execute(
+          `INSERT INTO users (username, password, exam_type) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE username = VALUES(username), password = VALUES(password), exam_type = VALUES(exam_type)`,
+          ['Alex', 'password123', '2026考研英语一']
+        );
+      }
+      console.log('默认用户创建/更新成功');
+    } catch (error) {
+      console.error('创建默认用户失败:', error.message);
+      // 忽略错误，继续执行
+    }
     
     connection.release();
   } catch (error) {
