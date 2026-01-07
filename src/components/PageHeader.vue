@@ -34,7 +34,7 @@ const handleKeyPress = (event) => {
     
     <!-- 搜索框 -->
     <div class="w-full md:w-64 lg:w-80 mt-2 md:mt-0">
-      <div class="relative glass-card rounded-full px-4 py-2">
+      <div class="relative glass-card rounded-full px-4 py-1.5">
         <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
         <input 
           type="text" 

@@ -8,6 +8,7 @@ const password = ref('')
 const error = ref('')
 const stars = ref([])
 const showStars = ref(false)
+const showPassword = ref(false)
 
 const generateStars = () => {
   const newStars = []
@@ -47,6 +48,11 @@ onMounted(() => {
 onUnmounted(() => {
   clearTimeout(animationFrame)
 })
+
+// 切换密码可见性
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
+}
 
 const handleLogin = async () => {
   if (!phone.value || !password.value) {
@@ -159,14 +165,18 @@ const handleLogin = async () => {
                 <i class="fa-solid fa-lock text-slate-500 text-xs sm:text-base group-focus-within:text-accent transition-colors"></i>
               </div>
               <input 
-                type="password" 
+                :type="showPassword ? 'text' : 'password'" 
                 id="password" 
                 v-model="password"
                 placeholder="请输入密码" 
                 class="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg sm:rounded-xl pl-8 sm:pl-11 pr-2.5 sm:pr-4 py-2 sm:py-4 text-xs sm:text-base text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all duration-300"
               />
-              <button type="button" class="absolute inset-y-0 right-0 pr-2.5 sm:pr-4 flex items-center text-slate-500 hover:text-slate-300 transition-colors text-xs sm:text-base">
-                <i class="fa-regular fa-eye"></i>
+              <button 
+                type="button" 
+                @click="togglePasswordVisibility"
+                class="absolute inset-y-0 right-0 pr-2.5 sm:pr-4 flex items-center text-slate-500 hover:text-slate-300 transition-colors text-xs sm:text-base"
+              >
+                <i :class="showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
               </button>
             </div>
           </div>

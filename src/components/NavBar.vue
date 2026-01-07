@@ -5,9 +5,9 @@
 <template>
   <!-- 导航栏 -->
   <nav class="fixed md:relative bottom-0 w-full md:w-16 md:h-screen bg-slate-900/90 md:bg-transparent border-t md:border-t-0 md:border-r border-slate-700 z-50 flex md:flex-col justify-around md:justify-center items-center py-3 md:py-0 md:gap-6 backdrop-blur-md">
-    <router-link to="/" class="text-accent text-2xl md:text-2xl md:mb-auto md:mt-6 hover:animate-pulse">
+    <div class="hidden md:block text-accent text-2xl md:text-2xl md:mb-auto md:mt-6 hover:animate-pulse">
       <i class="fa-solid fa-rocket"></i>
-    </router-link>
+    </div>
     
     <div class="flex md:flex-col gap-8 md:gap-8 text-xl text-slate-400">
       <router-link to="/" class="hover:text-white transition group relative">

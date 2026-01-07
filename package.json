@@ -11,6 +11,17 @@
     "init-db": "node --experimental-modules server/init-db.js"
   },
   "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/haptics": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/keyboard": "^8.0.0",
+    "@capacitor/network": "^8.0.0",
+    "@capacitor/preferences": "^8.0.0",
+    "@capacitor/splash-screen": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0",
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@tailwindcss/postcss": "^4.1.18",
     "chart.js": "^4.5.1",
@@ -29,7 +40,8 @@
     "autoprefixer": "^10.4.23",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vite-plugin-pwa": "^1.2.0"
   },
   "description": "StarMapEnglish是一个基于Vue 3和Vite构建的现代化英语学习应用，采用科技感UI设计，提供词汇、阅读、听力、写作等全方位英语学习功能，帮助用户高效提升英语水平。",
   "main": "vite.config.js",

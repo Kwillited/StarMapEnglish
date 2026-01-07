@@ -40,22 +40,10 @@ const quotes = [
   }
 ];
 
-// 当前显示的名言
+// 当前显示的名言 - 初始显示第一条
 const currentQuote = ref(quotes[0]);
-// 动画状态
-const isAnimating = ref(false);
 // 特训按钮状态
 const isStarting = ref(false);
-
-// 获取随机名言
-const getRandomQuote = () => {
-  isAnimating.value = true;
-  setTimeout(() => {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    currentQuote.value = quotes[randomIndex];
-    isAnimating.value = false;
-  }, 300);
-};
 
 // 开始特训处理
 const handleStartTraining = () => {
@@ -68,10 +56,9 @@ const handleStartTraining = () => {
   }, 1000);
 };
 
-// 组件挂载时初始化
+// 组件挂载时初始化 - 已简化，不再随机显示名言
 onMounted(() => {
-  // 初始随机显示一条名言
-  getRandomQuote();
+  // 初始显示第一条名言
 });
 </script>
 
@@ -80,22 +67,13 @@ onMounted(() => {
   <div class="mt-6 glass-card p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-r from-slate-800 to-slate-900/50 transition-all duration-500 hover:shadow-[0_0_30px_rgba(56,189,248,0.2)] hover:bg-gradient-to-r from-slate-800/90 to-slate-900/70">
     <div class="max-w-2xl">
       <!-- 名言文本 -->
-      <div class="relative">
-        <button 
-          @click="getRandomQuote"
-          class="absolute -top-4 -right-4 p-2 rounded-full bg-slate-700/50 text-slate-400 hover:bg-slate-600/50 hover:text-accent transition-colors"
-          title="换一条名言"
-        >
-          <i class="fa-solid fa-refresh"></i>
-        </button>
-        
+      <div>
         <p 
           class="text-lg md:text-xl font-serif italic text-slate-300 transition-all duration-500 ease-out"
-          :class="{ 'opacity-0 scale-95': isAnimating }"
         >
           "{{ currentQuote.text }}"
         </p>
-        <p class="text-sm text-slate-500 mt-2 transition-all duration-500 ease-out" :class="{ 'opacity-0': isAnimating }">
+        <p class="text-sm text-slate-500 mt-2 transition-all duration-500 ease-out">
           — {{ currentQuote.author }}
         </p>
       </div>

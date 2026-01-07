@@ -12,6 +12,7 @@ StarMapEnglish是一个基于Vue 3和Vite构建的现代化英语学习应用，
 - **样式框架**: Tailwind CSS (v4.1.18)
 - **图标库**: Font Awesome (v7.1.0)
 - **图表库**: Chart.js (v4.5.1)
+- **文件处理**: XLSX (v0.18.5)
 
 ### 后端
 - **运行环境**: Node.js
@@ -19,6 +20,11 @@ StarMapEnglish是一个基于Vue 3和Vite构建的现代化英语学习应用，
 - **数据库驱动**: mysql2 (v3.16.0)
 - **环境配置**: dotenv (v17.2.3)
 - **跨域支持**: cors (v2.8.5)
+
+### 移动端支持
+- **跨平台框架**: Capacitor (v8.0.0)
+- **支持平台**: iOS、Android
+- **PWA支持**: 渐进式Web应用
 
 ### 数据库
 - **主要支持**: MySQL
@@ -194,11 +200,67 @@ npm run build
 npm run preview
 ```
 
+## 移动端运行说明
+
+StarMapEnglish支持通过Capacitor构建为原生iOS和Android应用，同时支持作为PWA（渐进式Web应用）运行。
+
+### 1. Capacitor配置
+
+项目已集成Capacitor，用于将Web应用转换为原生移动应用。
+
+**主要配置文件**：
+- `capacitor.config.json`: Capacitor核心配置
+- `android/`: Android平台项目目录
+- `ios/`: iOS平台项目目录
+
+### 2. 构建原生应用
+
+#### 前提条件
+- **Android**: Android Studio 安装并配置
+- **iOS**: macOS 系统 + Xcode 安装并配置
+
+#### 构建步骤
+
+1. **构建Web应用**（每次修改代码后需要执行）：
+   ```bash
+   npm run build
+   npx cap sync
+   ```
+
+2. **Android构建**：
+   ```bash
+   npx cap open android
+   ```
+   在Android Studio中点击"Run"按钮构建并运行应用。
+
+3. **iOS构建**：
+   ```bash
+   npx cap open ios
+   ```
+   在Xcode中点击"Run"按钮构建并运行应用。
+
+### 3. PWA（渐进式Web应用）
+
+#### 特性
+- 支持安装到主屏幕
+- 支持离线访问
+- 支持推送通知
+- 响应式设计
+
+#### 部署
+将`dist/`目录部署到支持HTTPS的Web服务器上，用户可以通过浏览器访问并将应用安装到主屏幕。
+
+#### 主要PWA文件
+- `dist/manifest.webmanifest`: PWA配置文件
+- `dist/service-worker.js`: 服务工作线程
+
 ## 项目结构
 
 ```
 starmapenglish/
 ├── .vscode/            # VS Code配置
+├── android/            # Android平台项目（Capacitor生成）
+├── ios/                # iOS平台项目（Capacitor生成）
 ├── public/             # 静态资源
 │   └── CET4/           # CET4词汇数据（JSON格式）
 ├── server/             # 后端服务器代码
@@ -221,6 +283,7 @@ starmapenglish/
 │   └── style.css       # 全局样式
 ├── .env                # 环境变量配置
 ├── .gitignore          # Git忽略文件
+├── capacitor.config.json # Capacitor配置文件
 ├── index.html          # HTML模板
 ├── package.json        # 项目配置
 ├── package-lock.json   # 依赖锁文件
@@ -388,10 +451,16 @@ GET /api/settings
 
 ## 浏览器支持
 
-- Chrome (最新版)
-- Firefox (最新版)
-- Safari (最新版)
-- Edge (最新版)
+- Chrome (最新版) - 桌面端和移动端
+- Firefox (最新版) - 桌面端和移动端
+- Safari (最新版) - 桌面端和移动端
+- Edge (最新版) - 桌面端和移动端
+
+### PWA支持
+
+- Chrome for Android - 支持安装到主屏幕
+- Safari for iOS - 支持添加到主屏幕
+- Chrome for Desktop - 支持安装为应用
 
 ## 贡献
 

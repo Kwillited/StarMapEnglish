@@ -30,8 +30,8 @@ export const useWordManagementStore = defineStore('wordManagement', {
     // 学习记录
     learningStats: {
       today: 50,
-      total: 1250,
-      retention: 76
+      total: 1250
+      // retention 字段已移除，未使用
     },
     
     // 每日学习单词数设置
@@ -138,12 +138,6 @@ export const useWordManagementStore = defineStore('wordManagement', {
         // 清空单个单词的显示状态，使用全局状态
         this.showMeaning = {};
       }
-    },
-    
-    // 更新每日学习单词数
-    updateDailyWords(count) {
-      this.dailyWords = count;
-      // 可以在这里添加其他逻辑，比如根据新的每日学习单词数调整学习计划
     },
     
     // 完成复习
