@@ -2,23 +2,26 @@ import { defineStore } from 'pinia';
 import { baseWords, getInitialReviewWords } from '../data/wordData.js';
 
 export const useWordManagementStore = defineStore('wordManagement', {
-  // 状态管理
   state: () => ({
+    // 搜索和显示状态
     searchQuery: '',
-    studyMode: 'browse', // browse, review, study, test
     showMeaning: {},
     showAllMeanings: false,
+    
+    // 学习模式
+    studyMode: 'browse', // browse, review, study, test
+    
+    // 复习相关状态
     reviewProgress: 0,
     totalReviewWords: 0,
-    
-    // 复习轮次相关
     currentRound: 1,
     maxRounds: 1,
     roundProgress: 0,
     hasForgottenWords: false,
     forgottenWords: [],
+    reviewWords: [...getInitialReviewWords()],
     
-    // 学习进度相关
+    // 学习相关状态
     learningProgress: 0,
     totalLearningWords: baseWords.length,
     currentLearningRound: 1,
@@ -27,51 +30,47 @@ export const useWordManagementStore = defineStore('wordManagement', {
     hasUnknownWords: false,
     unknownWords: [],
     
-    // 学习记录
+    // 单词数据
+    words: [...baseWords],
+    initialWords: [...baseWords],
+    
+    // 学习统计
     learningStats: {
       today: 50,
       total: 1250
-      // retention 字段已移除，未使用
     },
     
-    // 每日学习单词数设置
+    // 每日学习设置
     dailyWords: 50,
-    
-    // 单词数据
-    words: [...baseWords],
-    reviewWords: [...getInitialReviewWords()],
-    
-    // 初始单词数据备份，用于重置学习列表
-    initialWords: [...baseWords],
     
     // 模态框状态
     showReviewModal: false,
     reviewModalMessage: ''
   }),
   
-  // 计算属性
   getters: {
     // 计算需要复习的单词数量
     dueForReview: (state) => state.reviewWords.length,
     
     // 过滤单词列表
     filteredWords: (state) => {
-      return state.words.filter(word => {
-        return word.word.toLowerCase().includes(state.searchQuery.toLowerCase()) || 
-               word.meaning.toLowerCase().includes(state.searchQuery.toLowerCase());
-      });
+      const query = state.searchQuery.toLowerCase();
+      return state.words.filter(word => 
+        word.word.toLowerCase().includes(query) || 
+        word.meaning.toLowerCase().includes(query)
+      );
     },
     
     // 过滤复习单词列表
     filteredReviewWords: (state) => {
-      return state.reviewWords.filter(word => {
-        return word.word.toLowerCase().includes(state.searchQuery.toLowerCase()) || 
-               word.meaning.toLowerCase().includes(state.searchQuery.toLowerCase());
-      });
+      const query = state.searchQuery.toLowerCase();
+      return state.reviewWords.filter(word => 
+        word.word.toLowerCase().includes(query) || 
+        word.meaning.toLowerCase().includes(query)
+      );
     }
   },
   
-  // 操作方法
   actions: {
     // 初始化总复习单词数
     initializeTotalReviewWords() {
@@ -82,22 +81,22 @@ export const useWordManagementStore = defineStore('wordManagement', {
     toggleStudyMode(mode) {
       this.studyMode = mode;
       
-      // 切换到复习模式时，重置复习进度和轮次
+      // 根据模式重置相应状态
       if (mode === 'review') {
         this.resetReviewState();
-      }
-      
-      // 切换到学习模式时，重置学习进度和轮次
-      if (mode === 'study') {
+      } else if (mode === 'study') {
         this.resetLearningState();
-      }
-      
-      // 切换到学习模式前检查是否需要复习
-        if (mode === 'study' && this.dueForReview > 0) {
-          // 显示复习提示模态框
-          this.reviewModalMessage = `您有 ${this.dueForReview} 个单词需要复习，建议先完成复习再学习新单词！`;
-          this.showReviewModal = true;
+        // 学习前检查是否需要复习
+        if (this.dueForReview > 0) {
+          this.showReviewReminder();
         }
+      }
+    },
+    
+    // 显示复习提醒
+    showReviewReminder() {
+      this.reviewModalMessage = `您有 ${this.dueForReview} 个单词需要复习，建议先完成复习再学习新单词！`;
+      this.showReviewModal = true;
     },
     
     // 重置复习状态
@@ -127,147 +126,144 @@ export const useWordManagementStore = defineStore('wordManagement', {
     // 切换显示单词意思
     toggleMeaning(wordId = null) {
       if (wordId) {
-        // 单个单词切换：切换指定单词的显示状态
+        // 单个单词切换
         this.showMeaning = {
           ...this.showMeaning,
           [wordId]: !this.showMeaning[wordId]
         };
       } else {
-        // 全局切换：切换所有单词的显示状态
+        // 全局切换
         this.showAllMeanings = !this.showAllMeanings;
-        // 清空单个单词的显示状态，使用全局状态
-        this.showMeaning = {};
+        this.showMeaning = {}; // 清空单个单词状态，使用全局状态
       }
     },
     
-    // 完成复习
+    // 完成复习/学习
     completeReview(wordId, status) {
-      console.log(`完成${this.studyMode === 'review' ? '复习' : '学习'}单词: ${wordId}, 状态: ${status}`);
-      
       if (this.studyMode === 'review') {
-        // 复习模式逻辑
-        this.reviewProgress++;
-        this.learningProgress++;
-        
-        // 从复习列表中移除该单词
-        const reviewIndex = this.reviewWords.findIndex(word => word.id === wordId);
-        if (reviewIndex > -1) {
-          // 找到当前单词的完整信息
-          const currentWord = this.reviewWords[reviewIndex];
-          
-          // 检查是否需要增加复习轮次
-          // 如果用户点了"忘记"或"模糊"，则将单词添加到忘记列表中
-          if (status === 'forgot' || status === 'fuzzy') {
-            this.hasForgottenWords = true;
-            this.forgottenWords.push(currentWord);
-            console.log(`用户点了${status === 'forgot' ? '忘记' : '模糊'}，将单词添加到忘记列表:`, currentWord.word);
-          }
-          
-          // 从复习列表中移除该单词
-          this.reviewWords.splice(reviewIndex, 1);
-        }
-        
-        // 从主单词列表中移除该单词
-        const wordIndex = this.words.findIndex(word => word.id === wordId);
-        if (wordIndex > -1) {
-          this.words.splice(wordIndex, 1);
-        }
-        
-        // 复习轮次计算
-        // 计算当前轮次的进度
-        const roundWordsCount = this.totalReviewWords;
-        
-        // 计算总复习进度：(当前轮次-1) * 本轮单词数 + 当前轮次已复习单词数
-        const totalReviewedWords = (this.currentRound - 1) * roundWordsCount + this.reviewProgress;
-        this.roundProgress = totalReviewedWords / (roundWordsCount * this.maxRounds);
-        
-        // 学习进度计算
-        // 计算当前学习轮次进度
-        const learningRoundWordsCount = this.totalLearningWords;
-        this.learningRoundProgress = this.learningProgress / learningRoundWordsCount;
-        
-        // 检查是否完成当前轮次
-        if (this.reviewProgress >= roundWordsCount) {
-          // 如果当前轮次有忘记的单词，则增加一轮复习
-          if (this.hasForgottenWords && this.forgottenWords.length > 0) {
-            // 增加一轮复习
-            this.maxRounds++;
-            console.log(`当前轮次有忘记的单词，增加一轮复习，当前最大轮次: ${this.maxRounds}`);
-            console.log(`下一轮复习单词:`, this.forgottenWords.map(word => word.word));
-            
-            // 进入下一轮复习，只复习被标记为"忘记"的单词
-            this.currentRound++;
-            
-            // 重置复习列表，只包含被标记为"忘记"的单词
-            this.reviewWords = [...this.forgottenWords];
-            
-            // 更新总复习单词数
-            this.totalReviewWords = this.reviewWords.length;
-            
-            // 重置复习进度和忘记标记（轮次内的进度）
-            this.reviewProgress = 0;
-            this.hasForgottenWords = false;
-            this.forgottenWords = [];
-          } else {
-            // 完成所有轮次复习
-            // 确保当前轮次不超过最大轮次
-            this.currentRound = Math.min(this.currentRound, this.maxRounds);
-          }
-        }
+        this.handleReviewMode(wordId, status);
       } else if (this.studyMode === 'study') {
-        // 学习模式逻辑
-        this.learningProgress++;
+        this.handleStudyMode(wordId, status);
+      }
+    },
+    
+    // 处理复习模式
+    handleReviewMode(wordId, status) {
+      this.reviewProgress++;
+      this.learningProgress++;
+      
+      // 从复习列表中移除单词
+      const reviewIndex = this.reviewWords.findIndex(word => word.id === wordId);
+      if (reviewIndex > -1) {
+        const currentWord = this.reviewWords[reviewIndex];
         
-        // 从主单词列表中移除该单词
-        const wordIndex = this.words.findIndex(word => word.id === wordId);
-        if (wordIndex > -1) {
-          // 找到当前单词的完整信息
-          const currentWord = this.words[wordIndex];
-          
-          // 检查是否需要增加学习轮次
-          // 如果用户点了"不认识"或"模糊"，则将单词添加到不认识列表中
-          if (status === 'forgot' || status === 'fuzzy') {
-            this.hasUnknownWords = true;
-            this.unknownWords.push(currentWord);
-            console.log(`用户点了${status === 'forgot' ? '不认识' : '模糊'}，将单词添加到不认识列表:`, currentWord.word);
-          }
-          
-          // 从主单词列表中移除该单词
-          this.words.splice(wordIndex, 1);
+        // 处理忘记或模糊的情况
+        if (status === 'forgot' || status === 'fuzzy') {
+          this.hasForgottenWords = true;
+          this.forgottenWords.push(currentWord);
         }
         
-        // 学习进度计算
-        // 计算当前学习轮次进度
-        const learningRoundWordsCount = this.totalLearningWords;
-        this.learningRoundProgress = this.learningProgress / learningRoundWordsCount;
+        // 从复习列表中移除
+        this.reviewWords.splice(reviewIndex, 1);
+      }
+      
+      // 从主单词列表中移除
+      const wordIndex = this.words.findIndex(word => word.id === wordId);
+      if (wordIndex > -1) {
+        this.words.splice(wordIndex, 1);
+      }
+      
+      // 更新进度
+      this.updateReviewProgress();
+      this.updateLearningProgress();
+      
+      // 检查是否完成当前轮次
+      this.checkReviewRoundCompletion();
+    },
+    
+    // 处理学习模式
+    handleStudyMode(wordId, status) {
+      this.learningProgress++;
+      
+      // 从主单词列表中移除单词
+      const wordIndex = this.words.findIndex(word => word.id === wordId);
+      if (wordIndex > -1) {
+        const currentWord = this.words[wordIndex];
         
-        // 检查是否完成当前学习轮次
-        if (this.words.length === 0) {
-          // 如果当前轮次有不认识的单词，则增加一轮学习
-          if (this.hasUnknownWords && this.unknownWords.length > 0) {
-            // 增加一轮学习
-            this.maxLearningRounds++;
-            console.log(`当前轮次有不认识的单词，增加一轮学习，当前最大轮次: ${this.maxLearningRounds}`);
-            console.log(`下一轮学习单词:`, this.unknownWords.map(word => word.word));
-            
-            // 进入下一轮学习，只学习被标记为"不认识"或"模糊"的单词
-            this.currentLearningRound++;
-            
-            // 重置学习列表，只包含被标记为"不认识"或"模糊"的单词
-            this.words = [...this.unknownWords];
-            
-            // 更新总学习单词数
-            this.totalLearningWords = this.words.length;
-            
-            // 重置学习进度和不认识标记（轮次内的进度）
-            this.learningProgress = 0;
-            this.hasUnknownWords = false;
-            this.unknownWords = [];
-          } else {
-            // 完成所有轮次学习
-            // 确保当前轮次不超过最大轮次
-            this.currentLearningRound = Math.min(this.currentLearningRound, this.maxLearningRounds);
-          }
+        // 处理不认识或模糊的情况
+        if (status === 'forgot' || status === 'fuzzy') {
+          this.hasUnknownWords = true;
+          this.unknownWords.push(currentWord);
+        }
+        
+        // 从主列表中移除
+        this.words.splice(wordIndex, 1);
+      }
+      
+      // 更新学习进度
+      this.updateLearningProgress();
+      
+      // 检查是否完成当前学习轮次
+      this.checkStudyRoundCompletion();
+    },
+    
+    // 更新复习进度
+    updateReviewProgress() {
+      const roundWordsCount = this.totalReviewWords;
+      const totalReviewedWords = (this.currentRound - 1) * roundWordsCount + this.reviewProgress;
+      this.roundProgress = totalReviewedWords / (roundWordsCount * this.maxRounds);
+    },
+    
+    // 更新学习进度
+    updateLearningProgress() {
+      const learningRoundWordsCount = this.totalLearningWords;
+      this.learningRoundProgress = this.learningProgress / learningRoundWordsCount;
+    },
+    
+    // 检查复习轮次完成情况
+    checkReviewRoundCompletion() {
+      const roundWordsCount = this.totalReviewWords;
+      
+      if (this.reviewProgress >= roundWordsCount) {
+        // 如果有忘记的单词，增加一轮复习
+        if (this.hasForgottenWords && this.forgottenWords.length > 0) {
+          this.maxRounds++;
+          this.currentRound++;
+          
+          // 更新复习列表为忘记的单词
+          this.reviewWords = [...this.forgottenWords];
+          this.totalReviewWords = this.reviewWords.length;
+          
+          // 重置状态
+          this.reviewProgress = 0;
+          this.hasForgottenWords = false;
+          this.forgottenWords = [];
+        } else {
+          // 确保当前轮次不超过最大轮次
+          this.currentRound = Math.min(this.currentRound, this.maxRounds);
+        }
+      }
+    },
+    
+    // 检查学习轮次完成情况
+    checkStudyRoundCompletion() {
+      if (this.words.length === 0) {
+        // 如果有不认识的单词，增加一轮学习
+        if (this.hasUnknownWords && this.unknownWords.length > 0) {
+          this.maxLearningRounds++;
+          this.currentLearningRound++;
+          
+          // 更新学习列表为不认识的单词
+          this.words = [...this.unknownWords];
+          this.totalLearningWords = this.words.length;
+          
+          // 重置状态
+          this.learningProgress = 0;
+          this.hasUnknownWords = false;
+          this.unknownWords = [];
+        } else {
+          // 确保当前轮次不超过最大轮次
+          this.currentLearningRound = Math.min(this.currentLearningRound, this.maxLearningRounds);
         }
       }
     }

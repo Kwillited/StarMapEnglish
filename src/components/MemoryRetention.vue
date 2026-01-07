@@ -1,7 +1,7 @@
 <script setup>
 // 记忆留存率卡片组件
 import DashboardCard from './DashboardCard.vue';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, defineProps } from 'vue';
 import Chart from 'chart.js/auto';
 
 const props = defineProps({

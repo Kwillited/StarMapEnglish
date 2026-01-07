@@ -5,15 +5,14 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     userInfo: {
       id: 1,
-      name: 'Alex',
-      username: 'Alex',
+      name: '游客',
+      username: '游客',
       phone: '',
       exam: '2026考研英语一',
       exam_type: '2026考研英语一',
       daysLeft: 186,
       energy: 85
     }
-    // isAuthenticated 状态已移除，未使用
   }),
   
   actions: {
@@ -27,9 +26,5 @@ export const useUserStore = defineStore('user', {
         exam: newInfo.exam_type || this.userInfo.exam
       };
     }
-    
-    // fetchUserInfo 方法已移除，调用不存在的 API 端点
-    // login 方法已移除，未使用
-    // logout 方法已移除，未使用
   }
 });

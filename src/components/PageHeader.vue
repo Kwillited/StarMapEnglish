@@ -1,6 +1,6 @@
 <script setup>
 // PageHeader组件，显示用户信息、考试倒计时和搜索功能
-import { ref } from 'vue';
+import { ref, defineProps } from 'vue';
 
 const props = defineProps({
   user: {
