@@ -34,12 +34,19 @@ export const useWordManagementStore = defineStore('wordManagement', {
       retention: 76
     },
     
+    // 每日学习单词数设置
+    dailyWords: 50,
+    
     // 单词数据
     words: [...baseWords],
     reviewWords: [...getInitialReviewWords()],
     
     // 初始单词数据备份，用于重置学习列表
-    initialWords: [...baseWords]
+    initialWords: [...baseWords],
+    
+    // 模态框状态
+    showReviewModal: false,
+    reviewModalMessage: ''
   }),
   
   // 计算属性
@@ -86,10 +93,11 @@ export const useWordManagementStore = defineStore('wordManagement', {
       }
       
       // 切换到学习模式前检查是否需要复习
-      if (mode === 'study' && this.dueForReview > 0) {
-        // 提示用户先复习
-        alert(`您有 ${this.dueForReview} 个单词需要复习，建议先完成复习再学习新单词！`);
-      }
+        if (mode === 'study' && this.dueForReview > 0) {
+          // 显示复习提示模态框
+          this.reviewModalMessage = `您有 ${this.dueForReview} 个单词需要复习，建议先完成复习再学习新单词！`;
+          this.showReviewModal = true;
+        }
     },
     
     // 重置复习状态
@@ -130,6 +138,12 @@ export const useWordManagementStore = defineStore('wordManagement', {
         // 清空单个单词的显示状态，使用全局状态
         this.showMeaning = {};
       }
+    },
+    
+    // 更新每日学习单词数
+    updateDailyWords(count) {
+      this.dailyWords = count;
+      // 可以在这里添加其他逻辑，比如根据新的每日学习单词数调整学习计划
     },
     
     // 完成复习

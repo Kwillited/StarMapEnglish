@@ -2,12 +2,37 @@
 // 词汇学习页面
 import WordCard from '../components/WordCard.vue';
 import { useWordManagementStore } from '../stores/wordManagement.js';
+import { ref, onMounted } from 'vue';
 
 // 使用单词管理 Pinia store
 const wordStore = useWordManagementStore();
 
 // 初始化总复习单词数
 wordStore.initializeTotalReviewWords();
+
+// 词汇本数据
+const vocabularyBooks = ref([]);
+const totalWords = ref(0);
+
+// 从后端获取词汇本数据
+const fetchVocabularyBooks = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/api/wordbooks');
+    if (response.ok) {
+      const data = await response.json();
+      vocabularyBooks.value = data;
+      // 计算所有词汇本的单词总数
+      totalWords.value = data.reduce((sum, book) => sum + book.word_count, 0);
+    }
+  } catch (error) {
+    console.error('Error fetching vocabulary books:', error);
+  }
+};
+
+// 组件挂载时获取词汇本数据
+onMounted(() => {
+  fetchVocabularyBooks();
+});
 </script>
 
 <template>
@@ -101,7 +126,7 @@ wordStore.initializeTotalReviewWords();
       <div class="grid grid-cols-3 gap-4">
         <div class="bg-slate-800/50 p-3 rounded-lg text-center">
           <span class="block text-xs text-slate-400 mb-1">今日学习</span>
-          <span class="block text-xl font-bold text-white">{{ wordStore.learningStats.today }}</span>
+          <span class="block text-xl font-bold text-white">{{ wordStore.dailyWords }}</span>
           <span class="block text-xs text-slate-400">单词</span>
         </div>
         <div class="bg-slate-800/50 p-3 rounded-lg text-center">
@@ -110,8 +135,9 @@ wordStore.initializeTotalReviewWords();
           <span class="block text-xs text-slate-400">单词</span>
         </div>
         <div class="bg-slate-800/50 p-3 rounded-lg text-center">
-          <span class="block text-xs text-slate-400 mb-1">记忆留存率</span>
-          <span class="block text-xl font-bold text-green-400">{{ wordStore.learningStats.retention }}%</span>
+          <span class="block text-xs text-slate-400 mb-1">单词总数</span>
+          <span class="block text-xl font-bold text-green-400">{{ totalWords }}</span>
+          <span class="block text-xs text-slate-400">个单词</span>
         </div>
       </div>
     </div>

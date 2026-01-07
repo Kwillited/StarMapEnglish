@@ -6,17 +6,22 @@ import ListeningCard from '../components/ListeningCard.vue'
 import ReadingCard from '../components/ReadingCard.vue'
 import WritingCard from '../components/WritingCard.vue'
 import MotivationalQuote from '../components/MotivationalQuote.vue'
+import { useWordManagementStore } from '../stores/wordManagement.js'
+import { ref, watch } from 'vue'
+
+// 使用单词管理 Pinia store
+const wordStore = useWordManagementStore()
 
 // 定义组件数据
-const vocabularyProgress = {
-  current: 50,
-  total: 120,
+const vocabularyProgress = ref({
+  current: wordStore.learningStats.total,
+  total: 0,
   categories: '经济类 & 哲学类',
   words: [
     { word: 'Ubiquitous', meaning: '无处不在的' },
     { word: 'Pragmatic', meaning: '务实的' }
   ]
-}
+})
 
 const memoryRetention = {
   percentage: 76,
@@ -27,6 +32,23 @@ const readingProgress = {
   title: 'The AI Revolution...',
   percentage: 65
 }
+
+// 从后端获取单词总数
+const fetchTotalWords = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/api/wordbooks');
+    if (response.ok) {
+      const data = await response.json();
+      // 计算所有词汇本的单词总数
+      vocabularyProgress.value.total = data.reduce((sum, book) => sum + book.word_count, 0);
+    }
+  } catch (error) {
+    console.error('Error fetching vocabulary books:', error);
+  }
+};
+
+// 组件挂载时获取单词总数
+fetchTotalWords();
 
 // 定义组件方法
 const startTraining = () => {

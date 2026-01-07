@@ -4,13 +4,28 @@ StarMapEnglish是一个基于Vue 3和Vite构建的现代化英语学习应用，
 
 ## 技术栈
 
-- **前端框架**: Vue 3 (v3.5.24)
+### 前端
+- **框架**: Vue 3 (v3.5.24)
 - **构建工具**: Vite (v7.2.4)
 - **路由管理**: Vue Router (v4.6.4)
 - **状态管理**: Pinia (v3.0.4)
 - **样式框架**: Tailwind CSS (v4.1.18)
 - **图标库**: Font Awesome (v7.1.0)
-- **开发语言**: JavaScript (ES Module)
+- **图表库**: Chart.js (v4.5.1)
+
+### 后端
+- **运行环境**: Node.js
+- **Web框架**: Express (v5.2.1)
+- **数据库驱动**: mysql2 (v3.16.0)
+- **环境配置**: dotenv (v17.2.3)
+- **跨域支持**: cors (v2.8.5)
+
+### 数据库
+- **主要支持**: MySQL
+- **备选支持**: SQLite (通过配置切换)
+
+### 开发语言
+- JavaScript (ES Module)
 
 ## 核心功能
 
@@ -78,6 +93,7 @@ StarMapEnglish是一个基于Vue 3和Vite构建的现代化英语学习应用，
 
 - Node.js 18.x 或更高版本
 - npm 或 yarn 包管理器
+- MySQL 服务器（可选，用于生产环境）
 
 ### 安装依赖
 
@@ -85,7 +101,73 @@ StarMapEnglish是一个基于Vue 3和Vite构建的现代化英语学习应用，
 npm install
 ```
 
-### 开发模式
+### 数据库配置
+
+#### 选项1：使用MySQL数据库（推荐）
+
+1. **配置环境变量**：修改 `.env` 文件中的数据库配置
+   ```
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=your_password
+   DB_NAME=starmapenglish
+   PORT=3000
+   ```
+
+2. **初始化数据库**：
+   ```bash
+   npm run init-db
+   ```
+
+3. **启动后端服务器**：
+   ```bash
+   npm run server
+   ```
+
+#### 选项2：使用SQLite数据库（简化配置）
+
+1. **安装SQLite依赖**：
+   ```bash
+   npm install sqlite3
+   ```
+
+2. **创建SQLite初始化脚本**：
+   ```javascript
+   // server/init-sqlite.js
+   import sqlite3 from 'sqlite3';
+   import fs from 'fs';
+   import path from 'path';
+   import { fileURLToPath } from 'url';
+   
+   const __filename = fileURLToPath(import.meta.url);
+   const __dirname = path.dirname(__filename);
+   
+   // 创建数据库连接
+   const db = new sqlite3.Database('./starmapenglish.db', (err) => {
+     if (err) {
+       console.error('创建数据库失败:', err.message);
+       process.exit(1);
+     }
+     console.log('SQLite数据库连接成功');
+   });
+   
+   // 创建表和导入数据的逻辑...
+   ```
+
+3. **更新package.json脚本**：
+   ```json
+   "scripts": {
+     // ... 其他脚本
+     "init-sqlite": "node --experimental-modules server/init-sqlite.js"
+   }
+   ```
+
+4. **运行SQLite初始化**：
+   ```bash
+   npm run init-sqlite
+   ```
+
+### 前端开发模式
 
 ```bash
 npm run dev
@@ -113,7 +195,16 @@ npm run preview
 starmapenglish/
 ├── .vscode/            # VS Code配置
 ├── public/             # 静态资源
-├── src/                # 源代码
+│   └── CET4/           # CET4词汇数据（JSON格式）
+├── server/             # 后端服务器代码
+│   ├── index.js        # 服务器主文件
+│   ├── init-db.js      # MySQL数据库初始化脚本
+│   ├── check-settings-format.js  # 设置格式检查
+│   ├── check-wordbooks.js        # 词汇本检查
+│   ├── migrate-settings.js       # 设置迁移脚本
+│   ├── migrate-wordbooks.js      # 词汇本迁移脚本
+│   └── migrate-wordcount.js      # 词数迁移脚本
+├── src/                # 前端源代码
 │   ├── assets/         # 资源文件
 │   ├── components/     # Vue组件
 │   ├── data/           # 数据文件
@@ -123,12 +214,15 @@ starmapenglish/
 │   ├── App.vue         # 根组件
 │   ├── main.js         # 入口文件
 │   └── style.css       # 全局样式
+├── .env                # 环境变量配置
 ├── .gitignore          # Git忽略文件
 ├── index.html          # HTML模板
 ├── package.json        # 项目配置
+├── package-lock.json   # 依赖锁文件
 ├── README.md           # 项目说明
+├── README_DATABASE.md  # 数据库配置说明
 ├── vite.config.js      # Vite配置
-└── tailwind.config.js  # Tailwind CSS配置
+└── prototype.html      # 原型设计
 ```
 
 ## 设计特点

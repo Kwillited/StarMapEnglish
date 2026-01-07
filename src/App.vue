@@ -3,6 +3,7 @@
 import NavBar from './components/NavBar.vue'
 import PageHeader from './components/PageHeader.vue'
 import { useRoute } from 'vue-router'
+import { useWordManagementStore } from './stores/wordManagement.js'
 
 // 定义组件数据
 const user = {
@@ -14,6 +15,14 @@ const user = {
 
 // 获取当前路由
 const route = useRoute()
+
+// 获取单词管理store
+const wordStore = useWordManagementStore()
+
+// 关闭模态框
+const closeModal = () => {
+  wordStore.showReviewModal = false
+}
 </script>
 
 <template>
@@ -40,6 +49,32 @@ const route = useRoute()
         </main>
       </div>
     </template>
+    <!-- 复习提示模态框 -->
+    <div v-if="wordStore.showReviewModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div class="glass-card p-4 md:p-6 rounded-xl w-full max-w-md">
+        <div class="text-center">
+          <h3 class="text-lg md:text-xl font-bold text-white mb-3 md:mb-4">复习提醒</h3>
+          <p class="text-slate-300 mb-4 md:mb-6 text-sm md:text-base">{{ wordStore.reviewModalMessage }}</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button 
+              @click="closeModal"
+              class="flex-1 bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-full transition-colors text-sm md:text-base"
+            >
+              稍后再说
+            </button>
+            <button 
+              @click="() => {
+                closeModal();
+                wordStore.studyMode = 'review';
+              }"
+              class="flex-1 bg-vocab hover:bg-vocab/90 text-white px-4 py-2 rounded-full transition-colors text-sm md:text-base"
+            >
+              开始复习
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

@@ -1,6 +1,7 @@
 <script setup>
 // 设置页面
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useWordManagementStore } from '../stores/wordManagement.js';
 
 // 选项卡状态管理
 const activeTab = ref('profile'); // profile, vocabulary, reading, listening, writing, general
@@ -10,17 +11,54 @@ const switchTab = (tab) => {
   activeTab.value = tab;
 };
 
+// 使用单词管理 Pinia store
+const wordStore = useWordManagementStore();
+
 // 词汇本数据
-const vocabularyBooks = [
-  { id: 1, name: '考研英语核心词汇', wordsCount: 5500 },
-  { id: 2, name: '经济类专业词汇', wordsCount: 1200 },
-  { id: 3, name: '科技类专业词汇', wordsCount: 1800 },
-  { id: 4, name: '日常英语高频词汇', wordsCount: 3000 }
-];
+const vocabularyBooks = ref([]);
 
 // 单词数调整相关状态
 const adjustStep = ref(10); // 调整步长
 const isCustomInput = ref(false); // 是否显示自定义输入框
+
+// 加载状态
+const isLoading = ref(true);
+const saveMessage = ref('');
+
+// 学习设置数据
+const settings = ref({
+  vocabulary: {
+    selectedBook: 1,
+    dailyWords: 50,
+    reviewInterval: 1,
+    showPronunciation: true,
+    autoPlayAudio: false
+  },
+  reading: {
+    dailyArticles: 2,
+    difficulty: 'medium',
+    showTranslation: true,
+    autoHighlight: true
+  },
+  listening: {
+    dailyMinutes: 30,
+    speed: 1,
+    showTranscript: true,
+    autoPlayNext: false
+  },
+  writing: {
+    dailyPractice: 1,
+    topicType: 'mixed',
+    autoCheckGrammar: true,
+    wordLimit: 200
+  },
+  general: {
+    dailyReminder: true,
+    notificationSound: true,
+    darkMode: true,
+    language: 'zh-CN'
+  }
+});
 
 // 调整每日学习单词数量
 const adjustWordCount = (amount) => {
@@ -149,48 +187,98 @@ const handleExport = () => {
   console.log('导出的数据:', exportData);
 };
 
-// 学习设置数据
-const settings = ref({
-  vocabulary: {
-    selectedBook: 1,
-    dailyWords: 50,
-    reviewInterval: 1,
-    showPronunciation: true,
-    autoPlayAudio: false
-  },
-  reading: {
-    dailyArticles: 2,
-    difficulty: 'medium',
-    showTranslation: true,
-    autoHighlight: true
-  },
-  listening: {
-    dailyMinutes: 30,
-    speed: 1,
-    showTranscript: true,
-    autoPlayNext: false
-  },
-  writing: {
-    dailyPractice: 1,
-    topicType: 'mixed',
-    autoCheckGrammar: true,
-    wordLimit: 200
-  },
-  general: {
-    dailyReminder: true,
-    notificationSound: true,
-    darkMode: true,
-    language: 'zh-CN'
+// 从后端获取词汇本数据
+const fetchVocabularyBooks = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/api/wordbooks');
+    if (response.ok) {
+      const data = await response.json();
+      vocabularyBooks.value = data;
+    } else {
+      console.error('Failed to fetch vocabulary books');
+    }
+  } catch (error) {
+    console.error('Error fetching vocabulary books:', error);
   }
+};
+
+// 从后端获取设置
+const fetchSettings = async () => {
+  try {
+    isLoading.value = true;
+    const response = await fetch('http://localhost:3000/api/settings');
+    if (response.ok) {
+      const data = await response.json();
+      settings.value = data;
+      // 更新Pinia store中的每日学习单词数
+      wordStore.updateDailyWords(settings.value.vocabulary.dailyWords);
+    } else {
+      console.error('Failed to fetch settings');
+    }
+  } catch (error) {
+    console.error('Error fetching settings:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// 保存设置到后端
+const saveSettings = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/api/settings/1', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(settings.value)
+    });
+    
+    if (response.ok) {
+      saveMessage.value = '设置保存成功！';
+      // 更新Pinia store中的每日学习单词数
+      wordStore.updateDailyWords(settings.value.vocabulary.dailyWords);
+      setTimeout(() => {
+        saveMessage.value = '';
+      }, 3000);
+    } else {
+      saveMessage.value = '保存失败，请重试';
+    }
+  } catch (error) {
+    console.error('Error saving settings:', error);
+    saveMessage.value = '保存失败，请检查网络连接';
+  }
+};
+
+// 监听设置变化，自动保存
+watch(settings, (newSettings) => {
+  saveSettings();
+}, { deep: true });
+
+// 组件挂载时获取数据
+onMounted(async () => {
+  await fetchVocabularyBooks();
+  await fetchSettings();
 });
 </script>
 
 <template>
   <div class="glass-card p-6 rounded-xl">
-    <h2 class="text-2xl font-bold text-white mb-4 flex items-center">
-      <i class="fa-solid fa-gear text-white mr-2"></i>
-      设置中心
-    </h2>
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold text-white flex items-center">
+        <i class="fa-solid fa-gear text-white mr-2"></i>
+        设置中心
+      </h2>
+      <!-- 加载状态 -->
+      <div v-if="isLoading" class="text-sm text-slate-400 flex items-center">
+        <i class="fa-solid fa-spinner fa-spin mr-1"></i>
+        加载中...
+      </div>
+      <!-- 保存消息 -->
+      <div v-else-if="saveMessage" class="text-sm text-green-400 flex items-center">
+        <i class="fa-solid fa-check-circle mr-1"></i>
+        {{ saveMessage }}
+      </div>
+    </div>
     
     <!-- 选项卡导航 -->
     <div class="border-b border-slate-700 mb-6">
@@ -304,7 +392,7 @@ const settings = ref({
                   :key="book.id" 
                   :value="book.id"
                 >
-                  {{ book.name }} ({{ book.wordsCount }} 个单词)
+                  {{ book.name }} ({{ book.word_count }} 个单词)
                 </option>
               </select>
             </div>

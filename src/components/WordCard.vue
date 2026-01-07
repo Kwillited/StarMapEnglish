@@ -100,22 +100,14 @@ const priorityClass = computed(() => {
           {{ priorityLabel }}
         </span>
         <button 
-          v-else
           class="ml-1 text-slate-400 hover:text-yellow-400 transition-colors"
-          title="添加到复习列表"
-        >
-          <i class="fa-solid fa-bookmark"></i>
-        </button>
-        <!-- 收藏按钮 -->
-        <button 
-          class="ml-2 text-slate-400 hover:text-red-400 transition-colors"
-          :class="{ 'text-red-400': isFavorited }"
+          :class="{ 'text-yellow-400': isFavorited }"
           title="收藏单词"
           @click="toggleFavorite"
         >
-          <i :class="isFavorited ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"
-        ></i>
+          <i :class="isFavorited ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
         </button>
+
       </div>
     </div>
     
