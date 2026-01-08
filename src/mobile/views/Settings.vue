@@ -4,13 +4,13 @@ import { ref } from 'vue';
 </script>
 
 <template>
-  <div class="space-y-4">
-    <!-- 页面顶部 - 非卡片样式 -->
-    <div class="p-4 mb-4">
-      <!-- 标题 -->
-      <div class="flex items-center justify-center mb-3">
-        <h3 class="text-lg font-semibold text-white">设置中心</h3>
-      </div>
+  <div class="space-y-4 px-4 pb-6 pt-20">
+    <!-- 顶部导航栏 -->
+    <div class="fixed top-0 left-0 right-0 bg-transparent backdrop-blur-xl border-b border-slate-700/30 px-4 py-2 sm:py-3 z-50">
+      <h2 class="text-xl font-bold text-white flex items-center justify-center p-4">
+        <i class="fa-solid fa-shapes text-vocab mr-2"></i>
+        设置中心
+      </h2>
     </div>
     
     <!-- 一级菜单列表 -->
