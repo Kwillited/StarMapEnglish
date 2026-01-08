@@ -1,101 +1,163 @@
 <script setup>
-// 移动端阅读练习页面
+// 移动端文章选择页面
 import { ref } from 'vue';
 
-// 阅读进度状态
-const readingProgress = ref(30);
-const currentParagraph = ref(0);
-
-// 阅读文本段落
-const paragraphs = [
+// 文章列表数据
+const articles = [
   {
     id: 1,
-    text: 'The Internet has revolutionized the way we communicate, work, and access information. It has become an integral part of modern life, connecting people from all corners of the globe.'
+    title: "The Internet Revolution",
+    description: "Exploring how the internet has transformed communication, commerce, and education globally.",
+    difficulty: "Easy",
+    category: "Technology",
+    wordCount: 520,
+    source: "2024考研英语阅读A"
   },
   {
     id: 2,
-    text: 'With the rise of social media platforms, individuals can now share their thoughts, ideas, and experiences with a worldwide audience instantaneously.'
+    title: "Climate Change and Global Warming",
+    description: "An analysis of the scientific consensus on climate change and its potential impacts.",
+    difficulty: "Medium",
+    category: "Environment",
+    wordCount: 780,
+    source: "2023雅思阅读Test 3"
   },
   {
     id: 3,
-    text: 'E-commerce has transformed the retail industry, allowing consumers to shop from the comfort of their homes and have products delivered directly to their doorsteps.'
+    title: "The Future of Artificial Intelligence",
+    description: "Examining the ethical implications and potential benefits of advanced AI systems.",
+    difficulty: "Hard",
+    category: "Technology",
+    wordCount: 950,
+    source: "2023托福阅读Passage 2"
   },
   {
     id: 4,
-    text: 'Online education has opened up new opportunities for lifelong learning, making quality education accessible to people who may not have had the chance otherwise.'
+    title: "Cultural Diversity in Modern Societies",
+    description: "How globalization has shaped cultural exchange and diversity in contemporary communities.",
+    difficulty: "Medium",
+    category: "Culture",
+    wordCount: 630,
+    source: "2024考研英语阅读B"
   },
   {
     id: 5,
-    text: 'However, the Internet also presents challenges, such as privacy concerns, misinformation, and the digital divide between those who have access and those who do not.'
+    title: "The Science of Happiness",
+    description: "Research findings on the psychological and social factors that contribute to happiness.",
+    difficulty: "Easy",
+    category: "Psychology",
+    wordCount: 480,
+    source: "2023剑桥雅思18"
+  },
+  {
+    id: 6,
+    title: "Renewable Energy Transition",
+    description: "The challenges and opportunities in transitioning to a sustainable energy future.",
+    difficulty: "Hard",
+    category: "Environment",
+    wordCount: 890,
+    source: "2023GRE阅读Section 1"
   }
 ];
 
-// 高亮单词
-const highlightedWords = ref([]);
+// 难度过滤选项
+const difficultyOptions = ['All', 'Easy', 'Medium', 'Hard'];
+const selectedDifficulty = ref('All');
 
-// 处理单词高亮
-const handleWordClick = (word) => {
-  if (highlightedWords.value.includes(word)) {
-    highlightedWords.value = highlightedWords.value.filter(w => w !== word);
-  } else {
-    highlightedWords.value.push(word);
-  }
+// 分类过滤选项
+const categoryOptions = ['All', 'Technology', 'Environment', 'Culture', 'Psychology'];
+const selectedCategory = ref('All');
+
+// 过滤文章列表
+const filteredArticles = () => {
+  return articles.filter(article => {
+    const matchesDifficulty = selectedDifficulty.value === 'All' || article.difficulty === selectedDifficulty.value;
+    const matchesCategory = selectedCategory.value === 'All' || article.category === selectedCategory.value;
+    return matchesDifficulty && matchesCategory;
+  });
+};
+
+// 处理文章选择
+const selectArticle = (article) => {
+  console.log('选择文章:', article.title);
+  // 这里可以添加导航到文章详情页的逻辑
+  // router.push({ name: 'ArticleDetail', params: { id: article.id } });
 };
 </script>
 
 <template>
-  <!-- 阅读练习页面 -->
-  <div class="space-y-4">
-    <!-- 页面标题 -->
-    <div class="p-4 mb-4">
-      <!-- 标题 -->
-      <div class="flex items-center justify-center mb-3">
-        <h3 class="text-lg font-semibold text-white">信号解析 (Reading)</h3>
+  <!-- 移动端文章选择页面 -->
+  <div class="space-y-4 px-4 pb-6 pt-20">
+    <!-- 顶部导航栏 -->
+    <div class="fixed top-0 left-0 right-0 bg-slate-900/80 backdrop-blur-2xl border-b border-slate-700 px-4 py-2 sm:py-3 z-50">
+      <div class="flex flex-col items-center">
+        <h2 class="text-2xl font-bold text-white">信号解析</h2>
       </div>
     </div>
     
-    <!-- 阅读内容卡片 -->
+    <!-- 过滤选项 -->
     <div class="glass-card p-4 rounded-xl">
-      <h3 class="text-lg font-semibold text-white mb-4">阅读文本</h3>
-      <div class="bg-slate-800/50 p-6 rounded-lg">
-        <div class="space-y-4">
-          <p 
-            v-for="(paragraph, index) in paragraphs" 
-            :key="paragraph.id" 
-            class="text-slate-300 leading-relaxed"
+      <div class="space-y-3">
+        <!-- 难度过滤 -->
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">难度</label>
+          <select 
+            v-model="selectedDifficulty"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-read/50"
           >
-            {{ paragraph.text }}
-          </p>
+            <option v-for="option in difficultyOptions" :key="option" :value="option">{{ option }}</option>
+          </select>
+        </div>
+        
+        <!-- 分类过滤 -->
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">分类</label>
+          <select 
+            v-model="selectedCategory"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-read/50"
+          >
+            <option v-for="option in categoryOptions" :key="option" :value="option">{{ option }}</option>
+          </select>
         </div>
       </div>
     </div>
     
-    <!-- 阅读进度 -->
-    <div class="glass-card p-4 rounded-xl">
-      <div class="flex justify-between text-sm text-slate-400 mb-2">
-        <span>阅读进度</span>
-        <span>{{ readingProgress }}%</span>
-      </div>
-      <div class="w-full bg-slate-700/50 rounded-full h-2">
-        <div 
-          class="bg-read h-2 rounded-full transition-all duration-500 ease-out"
-          :style="{ width: `${readingProgress}%` }"
-        ></div>
-      </div>
-    </div>
-    
-    <!-- 操作按钮 -->
-    <div class="flex gap-3 p-4">
-      <button 
-        class="flex-1 bg-slate-800/50 hover:bg-slate-700/50 text-white px-4 py-3 rounded-lg transition-colors"
+    <!-- 文章列表 -->
+    <div class="space-y-3">
+      <!-- 文章卡片 -->
+      <div 
+        v-for="article in filteredArticles()" 
+        :key="article.id"
+        class="glass-card p-4 rounded-xl cursor-pointer transition-all duration-300 hover:bg-slate-700/50"
+        @click="selectArticle(article)"
       >
-        上一篇
-      </button>
-      <button 
-        class="flex-1 bg-read hover:bg-read/90 text-white px-4 py-3 rounded-lg transition-colors"
-      >
-        下一篇
-      </button>
+        <!-- 难度标签 -->
+        <div class="flex items-center justify-between mb-2">
+          <span 
+            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+            :class="{
+              'bg-green-500/20 text-green-400': article.difficulty === 'Easy',
+              'bg-yellow-500/20 text-yellow-400': article.difficulty === 'Medium',
+              'bg-red-500/20 text-red-400': article.difficulty === 'Hard'
+            }"
+          >
+            {{ article.difficulty }}
+          </span>
+          <span class="text-xs text-slate-400">{{ article.wordCount }} words</span>
+        </div>
+        
+        <!-- 文章标题 -->
+        <h3 class="text-lg font-semibold text-white mb-1">{{ article.title }}</h3>
+        
+        <!-- 文章描述 -->
+        <p class="text-slate-400 text-sm mb-3 line-clamp-2">{{ article.description }}</p>
+        
+        <!-- 文章分类和来源 -->
+        <div class="flex justify-between items-center pt-2 border-t border-slate-700">
+          <span class="text-xs text-slate-500">{{ article.category }}</span>
+          <span class="text-xs text-slate-500">{{ article.source }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>

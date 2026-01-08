@@ -1,177 +1,166 @@
 <script setup>
-// 桌面端听力练习页面
+// 桌面端听力题目选择页面
 import { ref } from 'vue';
 
-// 音频播放器状态
-const isPlaying = ref(false);
-const currentTime = ref(0);
-const duration = ref(0);
-const volume = ref(80);
+// 听力题目列表数据
+const listeningTopics = [
+  {
+    id: 1,
+    title: "BBC News: Global Crises",
+    difficulty: "Medium",
+    category: "News",
+    duration: "2:30",
+    source: "BBC News / 2023真题",
+    description: "关于联合国警告全球面临多重危机的新闻报道，包括气候变化、冲突和贫困。"
+  },
+  {
+    id: 2,
+    title: "Scientific Breakthrough in Renewable Energy",
+    difficulty: "Hard",
+    category: "Science",
+    duration: "3:15",
+    source: "CNN Science / 2024",
+    description: "科学家在可再生能源领域取得重大突破，可能改变全球能源格局。"
+  },
+  {
+    id: 3,
+    title: "Daily Life in Tokyo",
+    difficulty: "Easy",
+    category: "Culture",
+    duration: "1:45",
+    source: "VOA Learning English / 2023",
+    description: "介绍东京日常生活的各个方面，包括交通、饮食和文化习惯。"
+  },
+  {
+    id: 4,
+    title: "Interview with Climate Activist",
+    difficulty: "Medium",
+    category: "Interview",
+    duration: "4:20",
+    source: "TED Talks / 2023",
+    description: "对著名气候活动家的采访，讨论气候变化的影响和解决方案。"
+  },
+  {
+    id: 5,
+    title: "The History of Internet",
+    difficulty: "Hard",
+    category: "Technology",
+    duration: "5:10",
+    source: "National Geographic / 2024",
+    description: "探索互联网的发展历史，从早期的ARPANET到现代的全球网络。"
+  },
+  {
+    id: 6,
+    title: "Health Benefits of Exercise",
+    difficulty: "Easy",
+    category: "Health",
+    duration: "2:05",
+    source: "WHO Public Health / 2023",
+    description: "世界卫生组织关于运动对身心健康益处的科普讲解。"
+  }
+];
 
-// 播放/暂停音频
-const togglePlay = () => {
-  isPlaying.value = !isPlaying.value;
-  console.log('播放/暂停音频:', isPlaying.value);
+// 难度过滤选项
+const difficultyOptions = ['All', 'Easy', 'Medium', 'Hard'];
+const selectedDifficulty = ref('All');
+
+// 分类过滤选项
+const categoryOptions = ['All', 'News', 'Science', 'Culture', 'Interview', 'Technology', 'Health'];
+const selectedCategory = ref('All');
+
+// 过滤题目列表
+const filteredTopics = () => {
+  return listeningTopics.filter(topic => {
+    const matchesDifficulty = selectedDifficulty.value === 'All' || topic.difficulty === selectedDifficulty.value;
+    const matchesCategory = selectedCategory.value === 'All' || topic.category === selectedCategory.value;
+    return matchesDifficulty && matchesCategory;
+  });
 };
 
-// 调整音量
-const adjustVolume = (event) => {
-  volume.value = parseInt(event.target.value);
-  console.log('调整音量:', volume.value);
-};
-
-// 调整播放进度
-const seek = (event) => {
-  const newTime = parseInt(event.target.value);
-  currentTime.value = newTime;
-  console.log('调整播放进度:', currentTime.value);
+// 处理题目选择
+const selectTopic = (topic) => {
+  console.log('选择题目:', topic.title);
+  // 这里可以添加导航到听力详情页的逻辑
+  // router.push({ name: 'ListeningDetail', params: { id: topic.id } });
 };
 </script>
 
 <template>
-  <!-- 桌面端听力练习页面 -->
-  <div class="space-y-4 sm:space-y-6">
+  <!-- 桌面端听力题目选择页面 -->
+  <div class="space-y-6 sm:space-y-8">
     <!-- 页面标题 -->
     <div class="space-y-2">
-      <h2 class="text-2xl font-bold text-white">信号截获 (Listening)</h2>
-      <p class="text-slate-400">BBC News / 2023真题</p>
+      <h2 class="text-3xl font-bold text-white">信号截获 (Listening)</h2>
     </div>
 
-    <!-- 听力内容区域 -->
+    <!-- 过滤选项 -->
     <div class="glass-card p-4 sm:p-6 rounded-2xl md:rounded-3xl">
-      <!-- 听力文本 -->
-      <div class="mb-6">
-        <h3 class="text-lg font-bold text-white mb-3">新闻文本</h3>
-        <div class="space-y-2">
-          <p class="text-slate-300 text-sm">
-            <span class="text-accent">[00:00]</span> Good morning, this is BBC News with Jonathan Izard.
-          </p>
-          <p class="text-slate-300 text-sm">
-            <span class="text-accent">[00:05]</span> The United Nations has warned that the world is facing a "perfect storm" of crises, including climate change, conflict, and poverty.
-          </p>
-          <p class="text-slate-300 text-sm">
-            <span class="text-accent">[00:15]</span> The UN Secretary-General Antonio Guterres said that urgent action is needed to address these issues.
-          </p>
-          <p class="text-slate-300 text-sm">
-            <span class="text-accent">[00:22]</span> "We are at a crossroads," he said. "The choices we make now will determine the future of our planet."
-          </p>
-          <p class="text-slate-300 text-sm">
-            <span class="text-accent">[00:30]</span> Mr. Guterres was speaking at the opening of the UN General Assembly in New York.
-          </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- 难度过滤 -->
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-2">难度</label>
+          <select 
+            v-model="selectedDifficulty"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-listen/50"
+          >
+            <option v-for="option in difficultyOptions" :key="option" :value="option">{{ option }}</option>
+          </select>
         </div>
-      </div>
-      
-      <!-- 音频播放器 -->
-      <div class="bg-slate-800/50 p-4 rounded-xl">
-        <div class="space-y-4">
-          <!-- 播放进度条 -->
-          <div class="space-y-1">
-            <div class="flex justify-between text-xs text-slate-400">
-              <span>{{ currentTime }}s</span>
-              <span>{{ duration }}s</span>
-            </div>
-            <input 
-              type="range" 
-              min="0" 
-              max="100" 
-              v-model="currentTime" 
-              @input="seek" 
-              class="w-full h-1 bg-slate-700 rounded-full appearance-none cursor-pointer accent-listen"
-            />
-          </div>
-          
-          <!-- 播放控制和音量 -->
-          <div class="flex items-center justify-between">
-            <!-- 播放控制 -->
-            <div class="flex items-center gap-4">
-              <button 
-                @click="togglePlay"
-                class="text-white hover:text-listen transition-colors"
-              >
-                <i :class="isPlaying ? 'fa-solid fa-pause text-xl' : 'fa-solid fa-play text-xl'"
-                ></i>
-              </button>
-              <button class="text-slate-400 hover:text-white transition-colors">
-                <i class="fa-solid fa-backward-step"></i>
-              </button>
-              <button class="text-slate-400 hover:text-white transition-colors">
-                <i class="fa-solid fa-forward-step"></i>
-              </button>
-            </div>
-            
-            <!-- 音量控制 -->
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-volume-high text-slate-400"></i>
-              <input 
-                type="range" 
-                min="0" 
-                max="100" 
-                v-model="volume" 
-                @input="adjustVolume" 
-                class="w-24 h-1 bg-slate-700 rounded-full appearance-none cursor-pointer accent-listen"
-              />
-              <span class="text-xs text-slate-400">{{ volume }}%</span>
-            </div>
-          </div>
+        
+        <!-- 分类过滤 -->
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-2">分类</label>
+          <select 
+            v-model="selectedCategory"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-listen/50"
+          >
+            <option v-for="option in categoryOptions" :key="option" :value="option">{{ option }}</option>
+          </select>
         </div>
       </div>
     </div>
-    
-    <!-- 听力练习题目 -->
-    <div class="glass-card p-4 sm:p-6 rounded-2xl md:rounded-3xl">
-      <h3 class="text-lg font-bold text-white mb-4">听力理解题</h3>
-      
-      <div class="space-y-4">
-        <!-- 题目1 -->
-        <div class="space-y-2">
-          <h4 class="text-slate-300 font-medium">1. What is the main topic of the news report?</h4>
-          <div class="space-y-2">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="q1" class="accent-listen" />
-              <span class="text-slate-300">A) Climate change</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="q1" class="accent-listen" />
-              <span class="text-slate-300">B) The UN General Assembly</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="q1" class="accent-listen" />
-              <span class="text-slate-300">C) Global crises</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="q1" class="accent-listen" />
-              <span class="text-slate-300">D) Poverty</span>
-            </label>
-          </div>
+
+    <!-- 题目列表 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+      <!-- 题目卡片 -->
+      <div 
+        v-for="topic in filteredTopics()" 
+        :key="topic.id"
+        class="glass-card p-4 sm:p-6 rounded-2xl md:rounded-3xl cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-listen/10"
+        @click="selectTopic(topic)"
+      >
+        <!-- 难度标签 -->
+        <div class="flex items-center justify-between mb-3">
+          <span 
+            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+            :class="{
+              'bg-green-500/20 text-green-400': topic.difficulty === 'Easy',
+              'bg-yellow-500/20 text-yellow-400': topic.difficulty === 'Medium',
+              'bg-red-500/20 text-red-400': topic.difficulty === 'Hard'
+            }"
+          >
+            {{ topic.difficulty }}
+          </span>
+          <span class="text-xs text-slate-400">{{ topic.duration }}</span>
         </div>
         
-        <!-- 题目2 -->
-        <div class="space-y-2">
-          <h4 class="text-slate-300 font-medium">2. Who is Antonio Guterres?</h4>
-          <div class="space-y-2">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="q2" class="accent-listen" />
-              <span class="text-slate-300">A) BBC News presenter</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="q2" class="accent-listen" />
-              <span class="text-slate-300">B) UN Secretary-General</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="q2" class="accent-listen" />
-              <span class="text-slate-300">C) US President</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="q2" class="accent-listen" />
-              <span class="text-slate-300">D) Climate scientist</span>
-            </label>
+        <!-- 题目标题 -->
+        <h3 class="text-xl font-semibold text-white mb-2">{{ topic.title }}</h3>
+        
+        <!-- 题目描述 -->
+        <p class="text-slate-400 text-sm line-clamp-2 mb-3">{{ topic.description }}</p>
+        
+        <!-- 题目详情 -->
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-slate-800/50 px-3 py-1.5 rounded-lg">
+            <span class="text-slate-500">分类:</span>
+            <span class="text-white ml-1">{{ topic.category }}</span>
+          </div>
+          <div class="bg-slate-800/50 px-3 py-1.5 rounded-lg">
+            <span class="text-slate-500">来源:</span>
+            <span class="text-white ml-1">{{ topic.source }}</span>
           </div>
         </div>
-        
-        <!-- 提交按钮 -->
-        <button class="w-full bg-listen hover:bg-listen/90 text-white py-2 rounded-lg transition-colors">
-          提交答案
-        </button>
       </div>
     </div>
   </div>

@@ -1,106 +1,178 @@
 <script setup>
-// 移动端写作练习页面
+// 移动端写作题目选择页面
 import { ref } from 'vue';
 
-// 写作主题
-const writingTopic = ref({
-  title: 'The Impact of Artificial Intelligence on Modern Society',
-  type: '议论文',
-  wordLimit: '400-450',
-  timeLimit: 60
-});
+// 写作题目列表数据
+const writingTopics = [
+  {
+    id: 1,
+    title: "The Impact of Artificial Intelligence on Modern Society",
+    type: "议论文",
+    difficulty: "Medium",
+    wordLimit: "400-450",
+    timeLimit: 60,
+    source: "2023年考研写作B",
+    description: "探讨人工智能对现代社会的多方面影响，包括经济、就业、教育和生活方式等。"
+  },
+  {
+    id: 2,
+    title: "Climate Change: Challenges and Solutions",
+    type: "议论文",
+    difficulty: "Hard",
+    wordLimit: "500-600",
+    timeLimit: 70,
+    source: "2024年雅思写作Task 2",
+    description: "分析气候变化带来的全球性挑战，并提出可行的解决方案，强调国际合作的重要性。"
+  },
+  {
+    id: 3,
+    title: "The Importance of Lifelong Learning in the Digital Age",
+    type: "议论文",
+    difficulty: "Easy",
+    wordLimit: "300-400",
+    timeLimit: 50,
+    source: "2023年托福写作",
+    description: "阐述在数字化时代，终身学习的重要性以及如何培养终身学习的习惯。"
+  },
+  {
+    id: 4,
+    title: "The Role of Social Media in Modern Communication",
+    type: "议论文",
+    difficulty: "Medium",
+    wordLimit: "400-500",
+    timeLimit: 60,
+    source: "2023年大学英语六级写作",
+    description: "讨论社交媒体在现代沟通中的作用，包括其积极影响和潜在问题。"
+  },
+  {
+    id: 5,
+    title: "The Benefits of Exercise for Physical and Mental Health",
+    type: "说明文",
+    difficulty: "Easy",
+    wordLimit: "300-400",
+    timeLimit: 50,
+    source: "2024年考研写作A",
+    description: "说明运动对身心健康的益处，包括增强体质、改善心情和提高认知能力等。"
+  },
+  {
+    id: 6,
+    title: "The Future of Work: Remote Work and Hybrid Models",
+    type: "议论文",
+    difficulty: "Hard",
+    wordLimit: "500-600",
+    timeLimit: 70,
+    source: "2023年GRE写作",
+    description: "分析远程工作和混合工作模式的未来发展趋势，以及它们对职场文化的影响。"
+  }
+];
 
-// 写作内容
-const writingContent = ref('');
+// 难度过滤选项
+const difficultyOptions = ['All', 'Easy', 'Medium', 'Hard'];
+const selectedDifficulty = ref('All');
 
-// 字数统计
-const wordCount = ref(0);
+// 类型过滤选项
+const typeOptions = ['All', '议论文', '说明文'];
+const selectedType = ref('All');
 
-// 剩余时间
-const remainingTime = ref(60 * 60); // 60分钟，单位为秒
-
-// 处理写作内容变化
-const handleContentChange = (event) => {
-  writingContent.value = event.target.value;
-  // 简单的字数统计，按空格分割
-  wordCount.value = writingContent.value.trim().split(/\s+/).filter(word => word.length > 0).length;
+// 过滤题目列表
+const filteredTopics = () => {
+  return writingTopics.filter(topic => {
+    const matchesDifficulty = selectedDifficulty.value === 'All' || topic.difficulty === selectedDifficulty.value;
+    const matchesType = selectedType.value === 'All' || topic.type === selectedType.value;
+    return matchesDifficulty && matchesType;
+  });
 };
 
-// 格式化时间
-const formatTime = (seconds) => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+// 处理题目选择
+const selectTopic = (topic) => {
+  console.log('选择题目:', topic.title);
+  // 这里可以添加导航到写作详情页的逻辑
+  // router.push({ name: 'WritingDetail', params: { id: topic.id } });
 };
 </script>
 
 <template>
-  <!-- 写作练习页面 -->
-  <div class="space-y-4">
-    <!-- 页面标题 -->
-    <div class="p-4 mb-4">
-      <!-- 标题 -->
-      <div class="flex items-center justify-center mb-3">
-        <h3 class="text-lg font-semibold text-white">信息合成 (Writing)</h3>
+  <!-- 移动端写作题目选择页面 -->
+  <div class="space-y-4 px-4 pb-6 pt-20">
+    <!-- 顶部导航栏 -->
+    <div class="fixed top-0 left-0 right-0 bg-slate-900/80 backdrop-blur-2xl border-b border-slate-700 px-4 py-2 sm:py-3 z-50">
+      <div class="flex flex-col items-center">
+        <h2 class="text-2xl font-bold text-white">信息合成</h2>
       </div>
     </div>
     
-    <!-- 写作主题卡片 -->
+    <!-- 过滤选项 -->
     <div class="glass-card p-4 rounded-xl">
-      <h3 class="text-lg font-semibold text-white mb-4">写作任务</h3>
-      <div class="bg-slate-800/50 p-6 rounded-lg">
-        <div class="space-y-3">
-          <div>
-            <h4 class="text-sm text-slate-400 mb-1">写作类型</h4>
-            <p class="text-white font-medium">{{ writingTopic.type }}</p>
-          </div>
-          <div>
-            <h4 class="text-sm text-slate-400 mb-1">题目</h4>
-            <p class="text-white font-medium">{{ writingTopic.title }}</p>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <h4 class="text-sm text-slate-400 mb-1">字数要求</h4>
-              <p class="text-white font-medium">{{ writingTopic.wordLimit }} 词</p>
-            </div>
-            <div>
-              <h4 class="text-sm text-slate-400 mb-1">时间限制</h4>
-              <p class="text-write font-medium">{{ writingTopic.timeLimit }} 分钟</p>
-            </div>
-          </div>
+      <div class="space-y-3">
+        <!-- 难度过滤 -->
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">难度</label>
+          <select 
+            v-model="selectedDifficulty"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-write/50"
+          >
+            <option v-for="option in difficultyOptions" :key="option" :value="option">{{ option }}</option>
+          </select>
+        </div>
+        
+        <!-- 类型过滤 -->
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-1">类型</label>
+          <select 
+            v-model="selectedType"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-write/50"
+          >
+            <option v-for="option in typeOptions" :key="option" :value="option">{{ option }}</option>
+          </select>
         </div>
       </div>
     </div>
     
-    <!-- 写作区域 -->
-    <div class="glass-card p-4 rounded-xl">
-      <div class="flex justify-between text-sm text-slate-400 mb-2">
-        <span>写作内容</span>
-        <div class="flex items-center gap-2">
-          <span class="text-white">{{ wordCount }}</span>
-          <span>/ {{ writingTopic.wordLimit }}</span>
+    <!-- 题目列表 -->
+    <div class="space-y-3">
+      <!-- 题目卡片 -->
+      <div 
+        v-for="topic in filteredTopics()" 
+        :key="topic.id"
+        class="glass-card p-4 rounded-xl cursor-pointer transition-all duration-300 hover:bg-slate-700/50"
+        @click="selectTopic(topic)"
+      >
+        <!-- 难度标签 -->
+        <div class="flex items-center justify-between mb-2">
+          <span 
+            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+            :class="{
+              'bg-green-500/20 text-green-400': topic.difficulty === 'Easy',
+              'bg-yellow-500/20 text-yellow-400': topic.difficulty === 'Medium',
+              'bg-red-500/20 text-red-400': topic.difficulty === 'Hard'
+            }"
+          >
+            {{ topic.difficulty }}
+          </span>
+          <span class="text-xs text-slate-400">{{ topic.wordLimit }} words</span>
         </div>
+        
+        <!-- 题目标题 -->
+        <h3 class="text-lg font-semibold text-white mb-1">{{ topic.title }}</h3>
+        
+        <!-- 题目描述 -->
+        <p class="text-slate-400 text-sm line-clamp-2 mb-3">{{ topic.description }}</p>
+        
+        <!-- 题目详情 -->
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-slate-800/50 px-3 py-1.5 rounded-lg">
+            <span class="text-slate-500">类型:</span>
+            <span class="text-white ml-1">{{ topic.type }}</span>
+          </div>
+          <div class="bg-slate-800/50 px-3 py-1.5 rounded-lg">
+            <span class="text-slate-500">时间:</span>
+            <span class="text-white ml-1">{{ topic.timeLimit }}分钟</span>
+          </div>
+        </div>
+        
+        <!-- 题目来源 -->
+        <div class="mt-3 text-xs text-slate-500">{{ topic.source }}</div>
       </div>
-      <textarea 
-        v-model="writingContent"
-        @input="handleContentChange"
-        placeholder="请在此输入你的写作内容..."
-        class="w-full h-64 bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-slate-300 focus:outline-none focus:ring-2 focus:ring-write/50 resize-none"
-      ></textarea>
-    </div>
-    
-    <!-- 操作按钮 -->
-    <div class="flex gap-3 p-4">
-      <button 
-        class="flex-1 bg-slate-800/50 hover:bg-slate-700/50 text-white px-4 py-3 rounded-lg transition-colors"
-      >
-        保存草稿
-      </button>
-      <button 
-        class="flex-1 bg-write hover:bg-write/90 text-white px-4 py-3 rounded-lg transition-colors"
-      >
-        提交作文
-      </button>
     </div>
   </div>
 </template>

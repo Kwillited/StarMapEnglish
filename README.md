@@ -425,7 +425,7 @@ starmapenglish/
 │   │   ├── modals/      # 模态框组件
 │   │   ├── stores/      # 状态管理
 │   │   └── views/       # 共享视图
-│   ├── views/          # 主视图目录
+│   ├── views/          # 旧视图目录（已清理，只保留设置相关子路由）
 │   ├── App.vue         # 根组件
 │   ├── main.js         # 入口文件
 │   └── style.css       # 全局样式

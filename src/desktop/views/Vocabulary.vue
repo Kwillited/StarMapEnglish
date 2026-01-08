@@ -21,7 +21,7 @@ const currentWords = computed(() => {
     <div class="glass-card p-4 md:p-6 rounded-xl">
       <h2 class="text-2xl font-bold text-white mb-4 flex items-center">
         <i class="fa-solid fa-shapes text-vocab mr-2"></i>
-        词汇学习中心
+        反应堆
       </h2>
       
       <!-- 搜索和模式切换 -->
