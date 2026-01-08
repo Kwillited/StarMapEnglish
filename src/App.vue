@@ -1,6 +1,6 @@
 <script setup>
 // 导入组件
-import NavBar from './components/navigation/NavBar.vue'
+import NavBar from './components/navigation/NavBarWrapper.vue'
 import PageHeader from './components/layout/PageHeader.vue'
 import StarBackground from './components/layout/StarBackground.vue'
 import ReviewModal from './components/modals/ReviewModal.vue'
@@ -36,11 +36,14 @@ const closeModal = () => {
     <!-- 对于其他页面，显示导航栏和主内容区 -->
     <template v-else>
       <div class="relative flex flex-col md:flex-row h-screen z-10">
-        <!-- 导航栏组件 -->
-        <NavBar />
+        <!-- 导航栏组件 - 复习、学习、测试页面不显示 -->
+        <NavBar v-if="route.path !== '/review' && route.path !== '/study' && route.path !== '/test'" />
 
-        <!-- 主内容区 -->
-        <main class="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto pb-20 md:pb-12 h-full">
+        <!-- 主内容区 - 复习、学习、测试页面调整padding -->
+        <main :class="[
+          'flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto h-full',
+          (route.path === '/review' || route.path === '/study' || route.path === '/test') ? 'pb-12 md:pb-12' : 'pb-20 md:pb-12'
+        ]">
           
           <!-- 页面头部组件 - 只在控制台页面显示 -->
           <PageHeader v-if="route.path === '/'" :user="userStore.userInfo" class="mb-6" />

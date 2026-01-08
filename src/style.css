@@ -79,3 +79,8 @@ main::-webkit-scrollbar {
     background: rgba(129, 140, 248, 0.8);
   }
 }
+
+/* 移动端导航栏激活状态 */
+.nav-active {
+  color: white !important;
+}

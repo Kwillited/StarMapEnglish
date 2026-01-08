@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue'
 import { useWordManagementStore } from '../../stores/wordManagement.js'
+import { useRouter } from 'vue-router'
 
 // 定义属性
 const props = defineProps({
@@ -20,6 +21,9 @@ const emit = defineEmits(['close', 'start-review'])
 // 获取单词管理store
 const wordStore = useWordManagementStore()
 
+// 获取路由实例
+const router = useRouter()
+
 // 关闭模态框
 const closeModal = () => {
   emit('close')
@@ -29,6 +33,9 @@ const closeModal = () => {
 const startReview = () => {
   wordStore.studyMode = 'review'
   emit('start-review')
+  emit('close')
+  // 跳转到复习页面
+  router.push('/review')
 }
 </script>
 

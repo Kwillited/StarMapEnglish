@@ -252,6 +252,53 @@ app.get('/api/current-user', async (req, res) => {
   }
 });
 
+// 通用函数：创建用户默认设置
+async function createDefaultSettings(userId) {
+  // 定义默认设置
+  const defaultSettings = {
+    vocabulary: {
+      selectedBook: 1,
+      dailyWords: 50,
+      reviewInterval: 1,
+      showPronunciation: true,
+      autoPlayAudio: false
+    },
+    reading: {
+      dailyArticles: 2,
+      difficulty: 'medium',
+      showTranslation: true,
+      autoHighlight: true
+    },
+    listening: {
+      dailyMinutes: 30,
+      speed: 1,
+      showTranscript: true,
+      autoPlayNext: false
+    },
+    writing: {
+      dailyPractice: 1,
+      topicType: 'mixed',
+      autoCheckGrammar: true,
+      wordLimit: 200
+    },
+    general: {
+      dailyReminder: true,
+      notificationSound: true,
+      darkMode: true,
+      language: 'zh-CN'
+    }
+  };
+  
+  // 插入默认设置到user_settings表
+  await pool.execute(
+    `INSERT INTO user_settings (user_id, vocabulary_settings, reading_settings, listening_settings, writing_settings, general_settings) 
+     VALUES (?, ?, ?, ?, ?, ?) `,
+    [userId, JSON.stringify(defaultSettings.vocabulary), JSON.stringify(defaultSettings.reading), 
+     JSON.stringify(defaultSettings.listening), JSON.stringify(defaultSettings.writing), 
+     JSON.stringify(defaultSettings.general)]
+  );
+}
+
 // API端点：用户注册
 app.post('/api/register', async (req, res) => {
   try {
@@ -277,48 +324,7 @@ app.post('/api/register', async (req, res) => {
     const userId = result.insertId;
     
     // 为新用户创建默认设置
-    const defaultSettings = {
-      vocabulary: {
-        selectedBook: 1,
-        dailyWords: 50,
-        reviewInterval: 1,
-        showPronunciation: true,
-        autoPlayAudio: false
-      },
-      reading: {
-        dailyArticles: 2,
-        difficulty: 'medium',
-        showTranslation: true,
-        autoHighlight: true
-      },
-      listening: {
-        dailyMinutes: 30,
-        speed: 1,
-        showTranscript: true,
-        autoPlayNext: false
-      },
-      writing: {
-        dailyPractice: 1,
-        topicType: 'mixed',
-        autoCheckGrammar: true,
-        wordLimit: 200
-      },
-      general: {
-        dailyReminder: true,
-        notificationSound: true,
-        darkMode: true,
-        language: 'zh-CN'
-      }
-    };
-    
-    // 插入默认设置到user_settings表
-    await pool.execute(
-      `INSERT INTO user_settings (user_id, vocabulary_settings, reading_settings, listening_settings, writing_settings, general_settings) 
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [userId, JSON.stringify(defaultSettings.vocabulary), JSON.stringify(defaultSettings.reading), 
-       JSON.stringify(defaultSettings.listening), JSON.stringify(defaultSettings.writing), 
-       JSON.stringify(defaultSettings.general)]
-    );
+    await createDefaultSettings(userId);
     
     res.json({ message: '注册成功' });
   } catch (error) {
@@ -348,48 +354,7 @@ app.post('/api/login', async (req, res) => {
       
       if (settings.length === 0) {
         // 如果没有设置记录，创建默认设置
-        const defaultSettings = {
-          vocabulary: {
-            selectedBook: 1,
-            dailyWords: 50,
-            reviewInterval: 1,
-            showPronunciation: true,
-            autoPlayAudio: false
-          },
-          reading: {
-            dailyArticles: 2,
-            difficulty: 'medium',
-            showTranslation: true,
-            autoHighlight: true
-          },
-          listening: {
-            dailyMinutes: 30,
-            speed: 1,
-            showTranscript: true,
-            autoPlayNext: false
-          },
-          writing: {
-            dailyPractice: 1,
-            topicType: 'mixed',
-            autoCheckGrammar: true,
-            wordLimit: 200
-          },
-          general: {
-            dailyReminder: true,
-            notificationSound: true,
-            darkMode: true,
-            language: 'zh-CN'
-          }
-        };
-        
-        // 插入默认设置到user_settings表
-        await pool.execute(
-          `INSERT INTO user_settings (user_id, vocabulary_settings, reading_settings, listening_settings, writing_settings, general_settings) 
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [user.id, JSON.stringify(defaultSettings.vocabulary), JSON.stringify(defaultSettings.reading), 
-           JSON.stringify(defaultSettings.listening), JSON.stringify(defaultSettings.writing), 
-           JSON.stringify(defaultSettings.general)]
-        );
+        await createDefaultSettings(user.id);
       }
       
       res.json(user);

@@ -137,15 +137,15 @@ const handleCompleteReview = (status) => {
   }
 };
 
-// 组件挂载时，如果是学习模式，自动生成选项
-if (props.studyMode === 'study') {
+// 组件挂载时，如果是学习或测试模式，自动生成选项
+if (props.studyMode === 'study' || props.studyMode === 'test') {
   generateOptions();
   reviewState.value = 'showingOptions';
 };
 
 // 监听学习模式变化，自动生成选项
 watch(() => props.studyMode, (newMode) => {
-  if (newMode === 'study') {
+  if (newMode === 'study' || newMode === 'test') {
     generateOptions();
     reviewState.value = 'showingOptions';
   } else {
@@ -155,7 +155,7 @@ watch(() => props.studyMode, (newMode) => {
 
 // 监听单词变化，重置状态
 watch(() => props.word, () => {
-  if (props.studyMode === 'study') {
+  if (props.studyMode === 'study' || props.studyMode === 'test') {
     generateOptions();
     reviewState.value = 'showingOptions';
   } else {
@@ -212,7 +212,7 @@ const priorityClass = computed(() => {
 </script>
 
 <template>
-  <div class="bg-slate-800/50 p-4 rounded-lg hover:border-vocab/50 border border-slate-700 transition-all">
+  <div class="p-4 mb-4">
     <div class="flex justify-between items-start">
       <div>
         <h4 class="text-xl font-bold text-white">{{ word.word }}</h4>
@@ -246,7 +246,7 @@ const priorityClass = computed(() => {
     <!-- 内容区域 - 固定高度，确保按钮位置一致 -->
     <div class="mt-4" style="min-height: 280px;">
       <!-- 选择题模式 -->
-      <template v-if="studyMode === 'study' && reviewState === 'showingOptions'">
+      <template v-if="(studyMode === 'study' || studyMode === 'test') && reviewState === 'showingOptions'">
         <h4 class="text-lg font-semibold text-white mb-3">选择正确的释义</h4>
         <div class="grid grid-cols-1 gap-2">
           <button
@@ -291,10 +291,10 @@ const priorityClass = computed(() => {
     </div>
     
     <!-- 统一的操作按钮 -->
-    <div class="mt-3 flex justify-center">
+    <div class="fixed bottom-4 left-0 right-0 flex justify-center px-4 py-3">
       <div class="flex gap-3 w-full max-w-md justify-around">
         <!-- 选择题模式：显示看答案和继续按钮 -->
-        <template v-if="studyMode === 'study' && reviewState === 'showingOptions'">
+        <template v-if="(studyMode === 'study' || studyMode === 'test') && reviewState === 'showingOptions'">
           <!-- 看答案按钮（未选中时显示） -->
           <template v-if="!selectedOption">
             <button 

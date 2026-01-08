@@ -1,5 +1,5 @@
 <script setup>
-// 词汇学习页面
+// 桌面端词汇学习页面
 import WordCard from '../components/cards/WordCard.vue';
 import { useWordManagementStore } from '../stores/wordManagement.js';
 import { ref, onMounted, computed, watch } from 'vue';
@@ -10,25 +10,10 @@ const wordStore = useWordManagementStore();
 // 初始化总复习单词数
 wordStore.initializeTotalReviewWords();
 
-// 当前显示的单词索引
-const currentWordIndex = ref(0);
-
 // 获取当前模式下的单词列表
 const currentWords = computed(() => {
   return wordStore.studyMode === 'review' ? wordStore.filteredReviewWords : wordStore.filteredWords;
 });
-
-// 监听单词列表变化，重置索引
-watch(currentWords, () => {
-  currentWordIndex.value = 0;
-});
-
-// 切换到下一个单词
-const nextWord = () => {
-  if (currentWords.value.length > 0) {
-    currentWordIndex.value = (currentWordIndex.value + 1) % currentWords.value.length;
-  }
-};
 </script>
 
 <template>
@@ -109,12 +94,12 @@ const nextWord = () => {
             <h4 class="text-white font-semibold">复习提醒</h4>
             <p class="text-slate-400 text-sm">您有 <span class="text-vocab font-bold">{{ wordStore.dueForReview }}</span> 个单词需要复习，建议先完成复习再学习新单词，以提高记忆效果。</p>
           </div>
-          <button 
-            @click="wordStore.toggleStudyMode('review')"
-            class="bg-vocab hover:bg-vocab/90 text-white text-sm px-4 py-2 rounded-full transition-colors"
+          <router-link 
+            to="/review"
+            class="bg-vocab hover:bg-vocab/90 text-white text-sm px-4 py-2 rounded-full transition-colors inline-block"
           >
             开始复习
-          </button>
+          </router-link>
         </div>
       </div>
       
@@ -211,26 +196,8 @@ const nextWord = () => {
         
 
         
-        <!-- 单词卡片显示 -->
-        <!-- 小屏单卡片显示模式 -->
-        <div v-if="currentWords.length > 0" class="md:hidden">
-          <div @click="nextWord" class="cursor-pointer">
-            <WordCard
-              :word="currentWords[currentWordIndex]"
-              :study-mode="wordStore.studyMode"
-              :show-meaning="wordStore.showMeaning"
-              :show-all-meanings="wordStore.showAllMeanings"
-              @toggle-meaning="wordStore.toggleMeaning"
-              @complete-review="wordStore.completeReview"
-            />
-          </div>
-          <div class="text-center mt-2 text-sm text-slate-400">
-            点击卡片切换到下一个单词 ({{ currentWordIndex + 1 }} / {{ currentWords.length }})
-          </div>
-        </div>
-        
-        <!-- 大屏多卡片显示模式 -->
-        <div class="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 单词卡片显示 - 桌面端多卡片显示模式 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- 动态渲染单词卡片 -->
           <WordCard
             v-for="word in currentWords"

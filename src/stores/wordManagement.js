@@ -72,11 +72,6 @@ export const useWordManagementStore = defineStore('wordManagement', {
   },
   
   actions: {
-    // 初始化总复习单词数
-    initializeTotalReviewWords() {
-      this.totalReviewWords = this.reviewWords.length;
-    },
-    
     // 切换学习模式
     toggleStudyMode(mode) {
       this.studyMode = mode;
@@ -141,57 +136,51 @@ export const useWordManagementStore = defineStore('wordManagement', {
     // 完成复习/学习
     completeReview(wordId, status) {
       if (this.studyMode === 'review') {
-        this.handleReviewMode(wordId, status);
+        this.handleWordCompletion(wordId, status, 'review');
       } else if (this.studyMode === 'study') {
-        this.handleStudyMode(wordId, status);
+        this.handleWordCompletion(wordId, status, 'study');
       }
     },
     
-    // 处理复习模式
-    handleReviewMode(wordId, status) {
-      this.reviewProgress++;
+    // 通用单词处理方法
+    handleWordCompletion(wordId, status, mode) {
+      // 增加学习进度
       this.learningProgress++;
       
-      // 从复习列表中移除单词
-      const reviewIndex = this.reviewWords.findIndex(word => word.id === wordId);
-      if (reviewIndex > -1) {
-        const currentWord = this.reviewWords[reviewIndex];
-        
-        // 处理忘记或模糊的情况
-        if (status === 'forgot' || status === 'fuzzy') {
-          this.hasForgottenWords = true;
-          this.forgottenWords.push(currentWord);
+      // 复习模式下额外增加复习进度
+      if (mode === 'review') {
+        this.reviewProgress++;
+      }
+      
+      let currentWord;
+      
+      // 根据模式处理不同的单词列表
+      if (mode === 'review') {
+        // 从复习列表中移除单词
+        const reviewIndex = this.reviewWords.findIndex(word => word.id === wordId);
+        if (reviewIndex > -1) {
+          currentWord = this.reviewWords[reviewIndex];
+          
+          // 处理忘记或模糊的情况
+          if (status === 'forgot' || status === 'fuzzy') {
+            this.hasForgottenWords = true;
+            this.forgottenWords.push(currentWord);
+          }
+          
+          // 从复习列表中移除
+          this.reviewWords.splice(reviewIndex, 1);
         }
-        
-        // 从复习列表中移除
-        this.reviewWords.splice(reviewIndex, 1);
       }
-      
-      // 从主单词列表中移除
-      const wordIndex = this.words.findIndex(word => word.id === wordId);
-      if (wordIndex > -1) {
-        this.words.splice(wordIndex, 1);
-      }
-      
-      // 更新进度
-      this.updateReviewProgress();
-      this.updateLearningProgress();
-      
-      // 检查是否完成当前轮次
-      this.checkReviewRoundCompletion();
-    },
-    
-    // 处理学习模式
-    handleStudyMode(wordId, status) {
-      this.learningProgress++;
       
       // 从主单词列表中移除单词
       const wordIndex = this.words.findIndex(word => word.id === wordId);
       if (wordIndex > -1) {
-        const currentWord = this.words[wordIndex];
+        if (!currentWord) {
+          currentWord = this.words[wordIndex];
+        }
         
-        // 处理不认识或模糊的情况
-        if (status === 'forgot' || status === 'fuzzy') {
+        // 学习模式下处理不认识的单词
+        if (mode === 'study' && (status === 'forgot' || status === 'fuzzy')) {
           this.hasUnknownWords = true;
           this.unknownWords.push(currentWord);
         }
@@ -200,11 +189,18 @@ export const useWordManagementStore = defineStore('wordManagement', {
         this.words.splice(wordIndex, 1);
       }
       
-      // 更新学习进度
+      // 更新进度
+      if (mode === 'review') {
+        this.updateReviewProgress();
+      }
       this.updateLearningProgress();
       
-      // 检查是否完成当前学习轮次
-      this.checkStudyRoundCompletion();
+      // 检查是否完成当前轮次
+      if (mode === 'review') {
+        this.checkReviewRoundCompletion();
+      } else {
+        this.checkStudyRoundCompletion();
+      }
     },
     
     // 更新复习进度
@@ -220,52 +216,61 @@ export const useWordManagementStore = defineStore('wordManagement', {
       this.learningRoundProgress = this.learningProgress / learningRoundWordsCount;
     },
     
-    // 检查复习轮次完成情况
-    checkReviewRoundCompletion() {
-      const roundWordsCount = this.totalReviewWords;
-      
-      if (this.reviewProgress >= roundWordsCount) {
-        // 如果有忘记的单词，增加一轮复习
-        if (this.hasForgottenWords && this.forgottenWords.length > 0) {
-          this.maxRounds++;
-          this.currentRound++;
-          
-          // 更新复习列表为忘记的单词
-          this.reviewWords = [...this.forgottenWords];
-          this.totalReviewWords = this.reviewWords.length;
-          
-          // 重置状态
-          this.reviewProgress = 0;
-          this.hasForgottenWords = false;
-          this.forgottenWords = [];
-        } else {
-          // 确保当前轮次不超过最大轮次
-          this.currentRound = Math.min(this.currentRound, this.maxRounds);
+    // 通用轮次检查方法
+    checkRoundCompletion(mode) {
+      if (mode === 'review') {
+        const roundWordsCount = this.totalReviewWords;
+        
+        if (this.reviewProgress >= roundWordsCount) {
+          // 如果有忘记的单词，增加一轮复习
+          if (this.hasForgottenWords && this.forgottenWords.length > 0) {
+            this.maxRounds++;
+            this.currentRound++;
+            
+            // 更新复习列表为忘记的单词
+            this.reviewWords = [...this.forgottenWords];
+            this.totalReviewWords = this.reviewWords.length;
+            
+            // 重置状态
+            this.reviewProgress = 0;
+            this.hasForgottenWords = false;
+            this.forgottenWords = [];
+          } else {
+            // 确保当前轮次不超过最大轮次
+            this.currentRound = Math.min(this.currentRound, this.maxRounds);
+          }
+        }
+      } else if (mode === 'study') {
+        if (this.words.length === 0) {
+          // 如果有不认识的单词，增加一轮学习
+          if (this.hasUnknownWords && this.unknownWords.length > 0) {
+            this.maxLearningRounds++;
+            this.currentLearningRound++;
+            
+            // 更新学习列表为不认识的单词
+            this.words = [...this.unknownWords];
+            this.totalLearningWords = this.words.length;
+            
+            // 重置状态
+            this.learningProgress = 0;
+            this.hasUnknownWords = false;
+            this.unknownWords = [];
+          } else {
+            // 确保当前轮次不超过最大轮次
+            this.currentLearningRound = Math.min(this.currentLearningRound, this.maxLearningRounds);
+          }
         }
       }
     },
     
-    // 检查学习轮次完成情况
+    // 检查复习轮次完成情况（调用通用方法）
+    checkReviewRoundCompletion() {
+      this.checkRoundCompletion('review');
+    },
+    
+    // 检查学习轮次完成情况（调用通用方法）
     checkStudyRoundCompletion() {
-      if (this.words.length === 0) {
-        // 如果有不认识的单词，增加一轮学习
-        if (this.hasUnknownWords && this.unknownWords.length > 0) {
-          this.maxLearningRounds++;
-          this.currentLearningRound++;
-          
-          // 更新学习列表为不认识的单词
-          this.words = [...this.unknownWords];
-          this.totalLearningWords = this.words.length;
-          
-          // 重置状态
-          this.learningProgress = 0;
-          this.hasUnknownWords = false;
-          this.unknownWords = [];
-        } else {
-          // 确保当前轮次不超过最大轮次
-          this.currentLearningRound = Math.min(this.currentLearningRound, this.maxLearningRounds);
-        }
-      }
+      this.checkRoundCompletion('study');
     }
   }
 });
