@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import api from '../api/apiservice.js'
 
 const router = useRouter()
 const phone = ref('')
@@ -69,27 +70,15 @@ const handleLogin = async () => {
   
   try {
     // 调用登录API
-    const response = await fetch('http://localhost:3000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        phone: phone.value,
-        password: password.value
-      })
+    const result = await api.auth.login({
+      phone: phone.value,
+      password: password.value
     })
     
-    const result = await response.json()
-    
-    if (response.ok) {
-      error.value = ''
-      router.push('/')
-    } else {
-      error.value = result.error || '登录失败'
-    }
+    error.value = ''
+    router.push('/')
   } catch (err) {
-    error.value = '网络错误，请稍后重试'
+    error.value = err.message || '网络错误，请稍后重试'
   }
 }
 </script>

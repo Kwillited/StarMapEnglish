@@ -214,13 +214,8 @@ const handleExport = () => {
 // 从后端获取词汇本数据
 const fetchVocabularyBooks = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/wordbooks');
-    if (response.ok) {
-      const data = await response.json();
-      vocabularyBooks.value = data;
-    } else {
-      console.error('Failed to fetch vocabulary books');
-    }
+    const data = await api.wordbooks.getAll();
+    vocabularyBooks.value = data;
   } catch (error) {
     console.error('Error fetching vocabulary books:', error);
   }
@@ -230,15 +225,10 @@ const fetchVocabularyBooks = async () => {
 const fetchSettings = async () => {
   try {
     isLoading.value = true;
-    const response = await fetch(`http://localhost:3000/api/settings/${userStore.userInfo.id}`);
-    if (response.ok) {
-      const data = await response.json();
-      settings.value = data;
-      // 更新Pinia store中的每日学习单词数
-      wordStore.updateDailyWords(settings.value.vocabulary.dailyWords);
-    } else {
-      console.error('Failed to fetch settings');
-    }
+    const data = await api.settings.getSettings(userStore.userInfo.id);
+    settings.value = data;
+    // 更新Pinia store中的每日学习单词数
+    wordStore.updateDailyWords(settings.value.vocabulary.dailyWords);
   } catch (error) {
     console.error('Error fetching settings:', error);
   } finally {
@@ -249,24 +239,13 @@ const fetchSettings = async () => {
 // 保存设置到后端
 const saveSettings = async () => {
   try {
-    const response = await fetch(`http://localhost:3000/api/settings/${userStore.userInfo.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(settings.value)
-    });
-    
-    if (response.ok) {
-      saveMessage.value = '设置保存成功！';
-      // 更新Pinia store中的每日学习单词数
-      wordStore.updateDailyWords(settings.value.vocabulary.dailyWords);
-      setTimeout(() => {
-        saveMessage.value = '';
-      }, 3000);
-    } else {
-      saveMessage.value = '保存失败，请重试';
-    }
+    await api.settings.updateSettings(userStore.userInfo.id, settings.value);
+    saveMessage.value = '设置保存成功！';
+    // 更新Pinia store中的每日学习单词数
+    wordStore.updateDailyWords(settings.value.vocabulary.dailyWords);
+    setTimeout(() => {
+      saveMessage.value = '';
+    }, 3000);
   } catch (error) {
     console.error('Error saving settings:', error);
     saveMessage.value = '保存失败，请检查网络连接';
@@ -297,24 +276,13 @@ const fetchUserProfile = async () => {
 // 保存个人信息到后端
 const saveUserProfile = async () => {
   try {
-    const response = await fetch(`http://localhost:3000/api/users/${userStore.userInfo.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formData.value)
-    });
-    
-    if (response.ok) {
-      // 更新 Pinia store 中的用户信息
-      userStore.updateUserInfo(formData.value);
-      saveMessage.value = '个人信息保存成功！';
-      setTimeout(() => {
-        saveMessage.value = '';
-      }, 3000);
-    } else {
-      saveMessage.value = '保存失败，请重试';
-    }
+    await api.users.updateUser(userStore.userInfo.id, formData.value);
+    // 更新 Pinia store 中的用户信息
+    userStore.updateUserInfo(formData.value);
+    saveMessage.value = '个人信息保存成功！';
+    setTimeout(() => {
+      saveMessage.value = '';
+    }, 3000);
   } catch (error) {
     console.error('Error saving user profile:', error);
     saveMessage.value = '保存失败，请检查网络连接';

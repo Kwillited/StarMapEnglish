@@ -9,6 +9,7 @@ StarMapEnglish是一个基于Vue 3和Vite构建的现代化英语学习应用，
 - **构建工具**: Vite (v7.2.4)
 - **路由管理**: Vue Router (v4.6.4)
 - **状态管理**: Pinia (v3.0.4)
+- **API服务层**: 统一API请求处理，封装fetch请求
 - **样式框架**: Tailwind CSS (v4.1.18)
 - **图标库**: Font Awesome (v7.1.0)
 - **图表库**: Chart.js (v4.5.1)
@@ -416,6 +417,8 @@ starmapenglish/
 │   ├── mobile/         # 移动端组件和视图
 │   ├── router/         # 路由配置
 │   ├── shared/         # 共享资源和状态
+│   │   ├── api/         # API服务层
+│   │   │   └── apiservice.js # 统一API请求处理
 │   │   ├── composables/ # 可复用逻辑
 │   │   ├── data/        # 数据文件
 │   │   ├── layout/      # 布局组件

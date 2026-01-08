@@ -24,6 +24,7 @@
     "@capacitor/status-bar": "^8.0.0",
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@tailwindcss/postcss": "^4.1.18",
+    "axios": "^1.13.2",
     "chart.js": "^4.5.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

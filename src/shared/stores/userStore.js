@@ -1,5 +1,6 @@
 // 用户状态管理
 import { defineStore } from 'pinia';
+import api from '../api/apiservice.js';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -25,6 +26,16 @@ export const useUserStore = defineStore('user', {
         name: newInfo.username || this.userInfo.name,
         exam: newInfo.exam_type || this.userInfo.exam
       };
+    },
+    
+    // 获取用户信息
+    async fetchUserInfo() {
+      try {
+        const userInfo = await api.users.getCurrentUser();
+        this.updateUserInfo(userInfo);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
     }
   }
 });

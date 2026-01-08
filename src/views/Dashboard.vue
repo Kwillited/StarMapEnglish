@@ -9,6 +9,7 @@ import { useWordManagementStore } from '../shared/stores/wordManagement.js'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDeviceDetection } from '../shared/composables/useDeviceDetection'
+import api from '../shared/api/apiservice.js'
 
 // 使用单词管理 Pinia store
 const wordStore = useWordManagementStore()
@@ -41,12 +42,9 @@ const readingProgress = {
 // 从后端获取单词总数
 const fetchTotalWords = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/wordbooks');
-    if (response.ok) {
-      const data = await response.json();
-      // 计算所有词汇本的单词总数
-      vocabularyProgress.value.total = data.reduce((sum, book) => sum + book.word_count, 0);
-    }
+    const data = await api.wordbooks.getAll();
+    // 计算所有词汇本的单词总数
+    vocabularyProgress.value.total = data.reduce((sum, book) => sum + book.word_count, 0);
   } catch (error) {
     console.error('Error fetching vocabulary books:', error);
   }
