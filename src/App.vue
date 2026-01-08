@@ -1,12 +1,12 @@
 <script setup>
 // 导入组件
-import NavBar from './components/navigation/NavBarWrapper.vue'
-import PageHeader from './components/layout/PageHeader.vue'
-import StarBackground from './components/layout/StarBackground.vue'
-import ReviewModal from './components/modals/ReviewModal.vue'
+import NavBar from './shared/navigation/NavBarWrapper.vue'
+import PageHeader from './shared/layout/PageHeader.vue'
+import StarBackground from './shared/layout/StarBackground.vue'
+import ReviewModal from './shared/modals/ReviewModal.vue'
 import { useRoute } from 'vue-router'
-import { useWordManagementStore } from './stores/wordManagement.js'
-import { useUserStore } from './stores/userStore.js'
+import { useWordManagementStore } from './shared/stores/wordManagement.js'
+import { useUserStore } from './shared/stores/userStore.js'
 
 // 获取当前路由
 const route = useRoute()
@@ -41,7 +41,7 @@ const closeModal = () => {
 
         <!-- 主内容区 - 复习、学习、测试页面调整padding -->
         <main :class="[
-          'flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto h-full',
+          'flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto h-full hide-scrollbar',
           (route.path === '/review' || route.path === '/study' || route.path === '/test') ? 'pb-12 md:pb-12' : 'pb-20 md:pb-12'
         ]">
           

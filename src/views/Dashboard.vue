@@ -5,14 +5,17 @@ import ListeningCard from '../components/cards/ListeningCard.vue'
 import ReadingCard from '../components/cards/ReadingCard.vue'
 import WritingCard from '../components/cards/WritingCard.vue'
 import MotivationalQuote from '../components/cards/MotivationalQuoteWrapper.vue'
-import { useWordManagementStore } from '../stores/wordManagement.js'
+import { useWordManagementStore } from '../shared/stores/wordManagement.js'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useDeviceDetection } from '../shared/composables/useDeviceDetection'
 
 // 使用单词管理 Pinia store
 const wordStore = useWordManagementStore()
 // 路由实例
 const router = useRouter()
+// 获取设备检测结果
+const { isMobile } = useDeviceDetection()
 
 // 定义组件数据
 const vocabularyProgress = ref({
@@ -60,8 +63,8 @@ const startTraining = () => {
   // 1. 显示提示信息
   alert('今日特训开始！\n\n建议学习计划：\n- 词汇学习：30分钟\n- 听力练习：20分钟\n- 阅读训练：30分钟\n\n加油！坚持就是胜利！');
   
-  // 2. 跳转到词汇学习页面
-  router.push('/vocabulary');
+  // 2. 根据设备类型跳转到相应的词汇学习页面
+  router.push(isMobile ? '/vocabulary/mobile' : '/vocabulary/desktop');
 };
 
 const continuePlaying = () => {

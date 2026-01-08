@@ -22,7 +22,7 @@ const toggleReadWriteMenu = () => {
       </router-link>
       
       <!-- 词汇学习 -->
-      <router-link to="/vocabulary" class="text-slate-500 hover:text-indigo-400 transition flex flex-col items-center gap-1 group col-span-1">
+      <router-link to="/vocabulary/mobile" class="text-slate-500 hover:text-indigo-400 transition flex flex-col items-center gap-1 group col-span-1">
         <i class="fa-solid fa-shapes text-2xl group-hover:scale-110 transition"></i>
       </router-link>
       

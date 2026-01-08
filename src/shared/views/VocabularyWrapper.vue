@@ -1,17 +1,17 @@
 <script setup>
 // 主导汇学习页面，根据设备类型自动选择移动端或桌面端组件
 import { defineAsyncComponent } from 'vue';
-import { useDeviceDetection } from '../shared/composables/useDeviceDetection';
+import { useDeviceDetection } from '../composables/useDeviceDetection';
 
 // 获取设备检测结果
 const { isMobile } = useDeviceDetection();
 
 // 异步导入组件
 const MobileVocabulary = defineAsyncComponent(() => 
-  import('./mobile/Vocabulary.vue')
+  import('../../mobile/views/Vocabulary.vue')
 );
 const DesktopVocabulary = defineAsyncComponent(() => 
-  import('./Vocabulary.vue')
+  import('../../desktop/views/Vocabulary.vue')
 );
 </script>
 

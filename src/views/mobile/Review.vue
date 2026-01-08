@@ -1,14 +1,13 @@
 <script setup>
 // 移动端词汇复习页面
-import WordCard from '../../components/cards/WordCard.vue';
-import { useWordManagementStore } from '../../stores/wordManagement.js';
+import WordCard from '../../desktop/cards/WordCard.vue';
+import { useWordManagementStore } from '../../shared/stores/wordManagement.js';
 import { ref, onMounted, computed, watch } from 'vue';
 
 // 使用单词管理 Pinia store
 const wordStore = useWordManagementStore();
 
-// 初始化总复习单词数
-wordStore.initializeTotalReviewWords();
+// 初始化总复习单词数 - 已移除未定义方法调用
 
 // 当前显示的单词索引
 const currentWordIndex = ref(0);

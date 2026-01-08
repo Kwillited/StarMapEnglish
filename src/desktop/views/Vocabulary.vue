@@ -1,13 +1,13 @@
 <script setup>
 // 桌面端词汇学习页面
-import WordCard from '../desktop/cards/WordCard.vue';
-import { useWordManagementStore } from '../shared/stores/wordManagement.js';
+import WordCard from '../cards/WordCard.vue';
+import { useWordManagementStore } from '../../shared/stores/wordManagement.js';
 import { ref, onMounted, computed, watch } from 'vue';
 
 // 使用单词管理 Pinia store
 const wordStore = useWordManagementStore();
 
-// 初始化总复习单词数 - 已移除未定义方法调用
+
 
 // 获取当前模式下的单词列表
 const currentWords = computed(() => {
@@ -116,13 +116,13 @@ const currentWords = computed(() => {
         </div>
         <div class="bg-slate-800/50 p-2 rounded-lg text-center">
           <span class="block text-xs text-slate-400 mb-1">单词总数</span>
-          <span class="block text-lg font-bold text-green-400">{{ totalWords }}</span>
+          <span class="block text-lg font-bold text-green-400">{{ wordStore.totalWords }}</span>
           <span class="block text-xs text-slate-400">个单词</span>
         </div>
       </div>
       
-      <!-- 仅在非浏览、非测试模式下显示单词列表内容 -->
-      <div v-if="wordStore.studyMode !== 'browse' && wordStore.studyMode !== 'test'">
+      <!-- 在浏览模式下显示单词列表 -->
+      <div v-if="wordStore.studyMode !== 'test'">
         <!-- 复习模式进度 -->
         <div v-if="wordStore.studyMode === 'review'" class="mb-4 flex flex-row gap-4">
           <!-- 复习轮次部分 -->
@@ -193,7 +193,7 @@ const currentWords = computed(() => {
           </div>
         </div>
         
-
+        
         
         <!-- 单词卡片显示 - 桌面端多卡片显示模式 -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

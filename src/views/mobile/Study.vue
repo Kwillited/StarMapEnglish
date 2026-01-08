@@ -1,7 +1,7 @@
 <script setup>
 // 移动端词汇学习页面
-import WordCard from '../../components/cards/WordCard.vue';
-import { useWordManagementStore } from '../../stores/wordManagement.js';
+import WordCard from '../../desktop/cards/WordCard.vue';
+import { useWordManagementStore } from '../../shared/stores/wordManagement.js';
 import { ref, onMounted, computed, watch } from 'vue';
 
 // 使用单词管理 Pinia store

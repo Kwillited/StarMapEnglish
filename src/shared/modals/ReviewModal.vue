@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue'
-import { useWordManagementStore } from '../../stores/wordManagement.js'
+import { useWordManagementStore } from '../stores/wordManagement.js'
 import { useRouter } from 'vue-router'
 
 // 定义属性

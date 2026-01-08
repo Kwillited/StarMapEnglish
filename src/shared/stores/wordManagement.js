@@ -43,6 +43,9 @@ export const useWordManagementStore = defineStore('wordManagement', {
     // 每日学习设置
     dailyWords: 50,
     
+    // 单词总数
+    totalWords: baseWords.length,
+    
     // 模态框状态
     showReviewModal: false,
     reviewModalMessage: ''

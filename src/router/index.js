@@ -1,34 +1,55 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 // 导入页面组件
-const Dashboard = () => import('../views/Dashboard.vue');
-const Vocabulary = () => import('../views/VocabularyWrapper.vue');
-const Review = () => import('../views/mobile/Review.vue');
-const Study = () => import('../views/mobile/Study.vue');
-const Test = () => import('../views/mobile/Test.vue');
-const Reading = () => import('../views/Reading.vue');
-const Listening = () => import('../views/ListeningDesktop.vue');
-const ListeningMobile = () => import('../views/mobile/ListeningMobile.vue');
-const Writing = () => import('../views/Writing.vue');
-const Settings = () => import('../views/Settings.vue'); // 桌面端设置（带选项卡）
-const MobileSettings = () => import('../views/mobile/Settings.vue'); // 移动端设置（带菜单）
+const Dashboard = () => import('../desktop/views/Dashboard.vue');
+const MobileHome = () => import('../mobile/views/Home.vue');
+const MobileVocabulary = () => import('../mobile/views/Vocabulary.vue');
+const DesktopVocabulary = () => import('../desktop/views/Vocabulary.vue');
+const VocabularyWrapper = () => import('../shared/views/VocabularyWrapper.vue');
+const Review = () => import('../mobile/views/Review.vue');
+const Study = () => import('../mobile/views/Study.vue');
+const Test = () => import('../mobile/views/Test.vue');
+const Reading = () => import('../desktop/views/Reading.vue');
+const ReadingMobile = () => import('../mobile/views/ReadingMobile.vue');
+const Listening = () => import('../desktop/views/ListeningDesktop.vue');
+const ListeningMobile = () => import('../mobile/views/ListeningMobile.vue');
+const Writing = () => import('../desktop/views/Writing.vue');
+const WritingMobile = () => import('../mobile/views/WritingMobile.vue');
+const Settings = () => import('../desktop/views/Settings.vue'); // 桌面端设置（带选项卡）
+const MobileSettings = () => import('../mobile/views/Settings.vue'); // 移动端设置（带菜单）
 // 设置二级页面
-const ProfileSettings = () => import('../views/mobile/settings/ProfileSettings.vue');
-const VocabularySettings = () => import('../views/mobile/settings/VocabularySettings.vue');
-const ReadingSettings = () => import('../views/mobile/settings/ReadingSettings.vue');
-const ListeningSettings = () => import('../views/mobile/settings/ListeningSettings.vue');
-const WritingSettings = () => import('../views/mobile/settings/WritingSettings.vue');
-const GeneralSettings = () => import('../views/mobile/settings/GeneralSettings.vue');
-const Login = () => import('../views/Login.vue');
-const Register = () => import('../views/Register.vue');
+const ProfileSettings = () => import('../mobile/views/settings/ProfileSettings.vue');
+const VocabularySettings = () => import('../mobile/views/settings/VocabularySettings.vue');
+const ReadingSettings = () => import('../mobile/views/settings/ReadingSettings.vue');
+const ListeningSettings = () => import('../mobile/views/settings/ListeningSettings.vue');
+const WritingSettings = () => import('../mobile/views/settings/WritingSettings.vue');
+const GeneralSettings = () => import('../mobile/views/settings/GeneralSettings.vue');
+const Login = () => import('../shared/views/Login.vue');
+const Register = () => import('../shared/views/Register.vue');
 
-// 路由守卫：根据设备类型选择不同的设置页面
-const settingsGuard = (to, from, next) => {
+// 通用路由守卫：根据设备类型选择不同的页面
+const deviceGuard = (to, from, next) => {
   const isMobile = window.innerWidth <= 768;
-  if (to.path === '/settings' && isMobile) {
-    next('/settings/mobile');
-  } else {
-    next();
+  
+  // 根据不同的路径处理不同的重定向逻辑
+  switch (to.path) {
+    case '/':
+      // 根路径根据设备类型重定向到不同的首页
+      if (isMobile) {
+        next('/home/mobile');
+      } else {
+        // 桌面端直接显示，避免无限循环
+        next();
+      }
+      break;
+    case '/settings':
+      next(isMobile ? '/settings/mobile' : undefined);
+      break;
+    case '/vocabulary':
+      next(isMobile ? '/vocabulary/mobile' : '/vocabulary/desktop');
+      break;
+    default:
+      next();
   }
 };
 
@@ -41,61 +62,40 @@ const router = createRouter({
       name: 'Login',
       component: Login
     },
-    {
-      path: '/register',
-      name: 'Register',
-      component: Register
+    { path: '/register', name: 'Register', component: Register },
+    { 
+      path: '/', 
+      name: 'Dashboard', 
+      component: Dashboard, 
+      beforeEnter: deviceGuard 
     },
-    {
-      path: '/',
-      name: 'Dashboard',
-      component: Dashboard
+    { 
+      path: '/home/mobile', 
+      name: 'MobileHome', 
+      component: MobileHome 
     },
-    {
-      path: '/vocabulary',
-      name: 'Vocabulary',
-      component: Vocabulary
+    { 
+      path: '/vocabulary', 
+      name: 'Vocabulary', 
+      component: VocabularyWrapper, 
+      beforeEnter: deviceGuard 
     },
-    {
-      path: '/review',
-      name: 'Review',
-      component: Review
-    },
-    {
-      path: '/study',
-      name: 'Study',
-      component: Study
-    },
-    {
-      path: '/test',
-      name: 'Test',
-      component: Test
-    },
-    {
-      path: '/reading',
-      name: 'Reading',
-      component: Reading
-    },
-    {
-      path: '/listening',
-      name: 'Listening',
-      component: Listening
-    },
-    {
-      path: '/listening/mobile',
-      name: 'ListeningMobile',
-      component: ListeningMobile
-    },
-    {
-      path: '/writing',
-      name: 'Writing',
-      component: Writing
-    },
-    {
-      path: '/settings',
-      name: 'Settings',
-      component: Settings,
-      beforeEnter: settingsGuard
+    { path: '/vocabulary/desktop', name: 'DesktopVocabulary', component: DesktopVocabulary },
+    { path: '/vocabulary/mobile', name: 'MobileVocabulary', component: MobileVocabulary },
+    { path: '/review', name: 'Review', component: Review },
+    { path: '/study', name: 'Study', component: Study },
+    { path: '/test', name: 'Test', component: Test },
+    { path: '/reading', name: 'Reading', component: Reading },
+    { path: '/listening', name: 'Listening', component: Listening },
+    { path: '/listening/mobile', name: 'ListeningMobile', component: ListeningMobile },
+    { path: '/reading/mobile', name: 'ReadingMobile', component: ReadingMobile },
+    { path: '/writing', name: 'Writing', component: Writing },
+    { path: '/writing/mobile', name: 'WritingMobile', component: WritingMobile },
+    { 
+      path: '/settings', 
+      name: 'Settings', 
+      component: Settings, 
+      beforeEnter: deviceGuard 
     },
     {
       path: '/settings/mobile',
@@ -109,7 +109,6 @@ const router = createRouter({
     { path: '/settings/listening', name: 'ListeningSettings', component: ListeningSettings },
     { path: '/settings/writing', name: 'WritingSettings', component: WritingSettings },
     { path: '/settings/general', name: 'GeneralSettings', component: GeneralSettings },
-    
     // 移动端子路由 - 带独立前缀
     { path: '/settings/mobile/profile', name: 'MobileProfileSettings', component: ProfileSettings },
     { path: '/settings/mobile/vocabulary', name: 'MobileVocabularySettings', component: VocabularySettings },

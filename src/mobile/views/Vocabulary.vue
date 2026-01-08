@@ -1,40 +1,22 @@
 <script setup>
 // 移动端词汇学习页面
-import WordCard from '../../desktop/cards/WordCard.vue';
 import { useWordManagementStore } from '../../shared/stores/wordManagement.js';
 import { ref, onMounted, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 // 使用单词管理 Pinia store
 const wordStore = useWordManagementStore();
-
-// 初始化总复习单词数
-wordStore.initializeTotalReviewWords();
-
-// 当前显示的单词索引
-const currentWordIndex = ref(0);
+// 路由实例
+const router = useRouter();
 
 // 获取当前模式下的单词列表
 const currentWords = computed(() => {
   return wordStore.studyMode === 'review' ? wordStore.filteredReviewWords : wordStore.filteredWords;
 });
 
-// 监听单词列表变化，重置索引
-watch(currentWords, () => {
-  currentWordIndex.value = 0;
-});
-
-// 切换到下一个单词
-const nextWord = () => {
-  if (currentWords.value.length > 0) {
-    currentWordIndex.value = (currentWordIndex.value + 1) % currentWords.value.length;
-  }
-};
-
-// 切换到上一个单词
-const prevWord = () => {
-  if (currentWords.value.length > 0) {
-    currentWordIndex.value = (currentWordIndex.value - 1 + currentWords.value.length) % currentWords.value.length;
-  }
+// 跳转到复习页面
+const goToReviewPage = () => {
+  router.push('/review');
 };
 </script>
 
@@ -52,11 +34,10 @@ const prevWord = () => {
     <div class="glass-card p-4 rounded-xl">
       <div class="flex justify-center flex-wrap gap-2">
 
-        <router-link 
-          to="/review"
+        <button 
+          @click="goToReviewPage"
           :class="[
-            'px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap inline-block',
-            wordStore.studyMode === 'review' ? 'bg-vocab text-white' : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+            'px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap inline-block bg-slate-800/50 text-slate-300'
           ]"
         >
           <span class="relative">
@@ -65,25 +46,23 @@ const prevWord = () => {
               {{ wordStore.dueForReview }}
             </span>
           </span>
-        </router-link>
-        <router-link 
-          to="/study"
+        </button>
+        <button 
+          @click="router.push('/study')"
           :class="[
-            'px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap inline-block',
-            wordStore.studyMode === 'study' ? 'bg-vocab text-white' : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+            'px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap inline-block bg-slate-800/50 text-slate-300'
           ]"
         >
           学习
-        </router-link>
-        <router-link 
-          to="/test"
+        </button>
+        <button 
+          @click="router.push('/test')"
           :class="[
-            'px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap inline-block',
-            wordStore.studyMode === 'test' ? 'bg-vocab text-white' : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+            'px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap inline-block bg-slate-800/50 text-slate-300'
           ]"
         >
           测试
-        </router-link>
+        </button>
       </div>
     </div>
     
@@ -123,6 +102,18 @@ const prevWord = () => {
           <span class="block text-lg font-bold text-green-400">{{ wordStore.totalWords }}</span>
           <span class="block text-xs text-slate-400">个单词</span>
         </div>
+      </div>
+    </div>
+    
+
+    
+    <!-- 测试模式内容 -->
+    <div v-if="wordStore.studyMode === 'test'" class="glass-card p-6 rounded-xl">
+      <h3 class="text-lg font-semibold text-white mb-4">词汇测试</h3>
+      <div class="bg-slate-800/50 p-8 rounded-lg text-center">
+        <i class="fa-solid fa-pencil-alt text-4xl text-vocab mb-4 opacity-70"></i>
+        <h4 class="text-xl font-bold text-white mb-2">测试功能开发中</h4>
+        <p class="text-slate-400">词汇测试功能即将上线，敬请期待！</p>
       </div>
     </div>
   </div>

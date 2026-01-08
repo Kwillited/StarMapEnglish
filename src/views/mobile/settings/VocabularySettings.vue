@@ -1,8 +1,8 @@
 <script setup>
 // 词汇学习设置页面
 import { ref, onMounted, watch } from 'vue';
-import { useWordManagementStore } from '../../../stores/wordManagement.js';
-import { useUserStore } from '../../../stores/userStore.js';
+import { useWordManagementStore } from '../../../shared/stores/wordManagement.js';
+import { useUserStore } from '../../../shared/stores/userStore.js';
 import * as XLSX from 'xlsx';
 
 // 使用单词管理 Pinia store

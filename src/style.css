@@ -36,16 +36,7 @@ body {
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
-/* 隐藏滚动条 */
-main {
-  scrollbar-width: none;
-}
-
-main::-webkit-scrollbar {
-  display: none;
-}
-
-/* 隐藏滚动条工具类 */
+/* 隐藏滚动条 - 使用统一的工具类 */
 .hide-scrollbar {
   scrollbar-width: none;
 }
@@ -76,6 +67,30 @@ main::-webkit-scrollbar {
   }
   
   main::-webkit-scrollbar-thumb:hover {
+    background: rgba(129, 140, 248, 0.8);
+  }
+  
+  /* 大屏下移除隐藏滚动条工具类效果 */
+  .hide-scrollbar {
+    scrollbar-width: auto;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: block;
+    width: 8px;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 4px;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(129, 140, 248, 0.5);
+    border-radius: 4px;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(129, 140, 248, 0.8);
   }
 }
