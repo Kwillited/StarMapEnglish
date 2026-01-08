@@ -1,16 +1,101 @@
 :root {
   color-scheme: dark;
-}
-
-
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+  /* 自定义颜色变量 */
+  --accent: #38bdf8;
+  --vocab: #818cf8;
+  --read: #34d399;
+  --listen: #fbbf24;
+  --write: #f472b6;
 }
 
 #app {
   width: 100%;
   min-height: 100vh;
+}
+
+/* 全局样式 - 应用于整个页面 */
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* 玻璃拟态卡片效果 */
+.glass-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* 隐藏滚动条 - 使用统一的工具类 */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 大屏模式下显示滚动条 */
+@media (min-width: 768px) {
+  main {
+    scrollbar-width: auto;
+  }
+  
+  main::-webkit-scrollbar {
+    display: block;
+    width: 8px;
+  }
+  
+  main::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 4px;
+  }
+  
+  main::-webkit-scrollbar-thumb {
+    background: rgba(129, 140, 248, 0.5);
+    border-radius: 4px;
+  }
+  
+  main::-webkit-scrollbar-thumb:hover {
+    background: rgba(129, 140, 248, 0.8);
+  }
+  
+  /* 大屏下移除隐藏滚动条工具类效果 */
+  .hide-scrollbar {
+    scrollbar-width: auto;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: block;
+    width: 8px;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 4px;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(129, 140, 248, 0.5);
+    border-radius: 4px;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(129, 140, 248, 0.8);
+  }
+}
+
+/* 移动端导航栏激活状态 */
+.nav-active {
+  color: white !important;
 }

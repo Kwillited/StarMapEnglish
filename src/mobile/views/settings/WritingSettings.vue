@@ -1,0 +1,122 @@
+<script setup>
+// 写作设置页面组件
+import { ref } from 'vue';
+
+// 写作设置数据
+const writingSettings = ref({
+  difficulty: 'medium',
+  wordLimit: 400,
+  autoSave: true,
+  spellCheck: true
+});
+
+// 处理设置变更
+const handleSettingChange = (setting, value) => {
+  writingSettings.value[setting] = value;
+  console.log('更新写作设置:', setting, value);
+};
+</script>
+
+<template>
+  <!-- 写作设置页面 -->
+  <div class="space-y-4">
+    <!-- 页面标题 -->
+    <div class="p-4 mb-4">
+      <!-- 返回按钮和标题 -->
+      <div class="flex items-center justify-between mb-3">
+        <router-link to="/settings/mobile" class="text-white hover:text-write transition-colors">
+          <i class="fa-solid fa-arrow-left text-xl"></i>
+        </router-link>
+        
+        <div class="flex-1 text-center">
+          <h2 class="text-xl font-bold text-white">写作设置</h2>
+          <p class="text-slate-400 text-sm">个性化您的写作学习体验</p>
+        </div>
+        
+        <!-- 占位元素，保持标题居中 -->
+        <div class="w-6"></div>
+      </div>
+    </div>
+
+    <!-- 设置选项 -->
+    <div class="space-y-3">
+      <!-- 写作难度 -->
+      <div class="glass-card p-4 rounded-xl">
+        <div class="space-y-2">
+          <h3 class="text-base font-medium text-white">写作难度</h3>
+          <select 
+            v-model="writingSettings.difficulty"
+            @change="handleSettingChange('difficulty', $event.target.value)"
+            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-write/50"
+          >
+            <option value="easy">简单</option>
+            <option value="medium">中等</option>
+            <option value="hard">困难</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 字数要求 -->
+      <div class="glass-card p-4 rounded-xl">
+        <div class="space-y-2">
+          <h3 class="text-base font-medium text-white">字数要求</h3>
+          <div class="flex items-center gap-3">
+            <input 
+              type="range" 
+              min="200" 
+              max="1000" 
+              step="50" 
+              v-model="writingSettings.wordLimit"
+              @input="handleSettingChange('wordLimit', parseInt($event.target.value))"
+              class="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-write"
+            />
+            <span class="text-white text-sm min-w-[60px] text-center">{{ writingSettings.wordLimit }}词</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 自动保存 -->
+      <div class="glass-card p-4 rounded-xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-medium text-white">自动保存</h3>
+            <p class="text-slate-400 text-xs">自动保存您的写作内容</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input 
+              type="checkbox" 
+              v-model="writingSettings.autoSave"
+              @change="handleSettingChange('autoSave', writingSettings.autoSave)"
+              class="sr-only peer"
+            />
+            <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-write/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-write"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- 拼写检查 -->
+      <div class="glass-card p-4 rounded-xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-medium text-white">拼写检查</h3>
+            <p class="text-slate-400 text-xs">自动检查您的拼写错误</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input 
+              type="checkbox" 
+              v-model="writingSettings.spellCheck"
+              @change="handleSettingChange('spellCheck', writingSettings.spellCheck)"
+              class="sr-only peer"
+            />
+            <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-write/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-write"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 保存按钮 -->
+    <button class="w-full bg-write hover:bg-write/90 text-white py-2.5 rounded-lg transition-colors">
+      保存设置
+    </button>
+  </div>
+</template>
