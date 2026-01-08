@@ -96,9 +96,10 @@ const selectTopic = (topic) => {
   <div class="space-y-4 px-4 pb-6 pt-20">
     <!-- 顶部导航栏 -->
     <div class="fixed top-0 left-0 right-0 bg-transparent backdrop-blur-xl border-b border-slate-700/30 px-4 py-2 sm:py-3 z-50">
-      <div class="flex flex-col items-center">
-        <h2 class="text-2xl font-bold text-white">信息合成</h2>
-      </div>
+      <h2 class="text-xl font-bold text-white flex items-center justify-center p-4">
+        <i class="fa-solid fa-shapes text-vocab mr-2"></i>
+        信息合成
+      </h2>
     </div>
     
     <!-- 过滤选项 -->
