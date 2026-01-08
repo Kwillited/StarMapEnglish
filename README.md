@@ -42,6 +42,10 @@ StarMapEnglish是一个基于Vue 3和Vite构建的现代化英语学习应用，
 - 单词反应堆：动态展示当日核心词汇
 - 分类学习：支持经济类、哲学类等分类词汇
 - 记忆留存率：可视化展示记忆效果
+- 智能复习机制：基于记忆曲线的复习计划
+- 多种学习模式：浏览、复习、学习、测试
+- 进度跟踪：学习和复习进度可视化
+- 单词管理：搜索、筛选、掌握情况反馈
 
 ### 📖 阅读学习 (Reading)
 - 档案解密：经济学人精读、真题阅读
@@ -104,7 +108,7 @@ StarMapEnglish是一个基于Vue 3和Vite构建的现代化英语学习应用，
 
 - Node.js 18.x 或更高版本
 - npm 或 yarn 包管理器
-- MySQL 服务器（可选，用于生产环境）
+- MySQL 服务器（推荐用于生产环境）或 SQLite（简化配置）
 
 ### 安装依赖
 
@@ -142,9 +146,8 @@ npm install
    npm install sqlite3
    ```
 
-2. **创建SQLite初始化脚本**：
+2. **创建SQLite初始化脚本**：创建 `server/init-sqlite.js` 文件，内容如下：
    ```javascript
-   // server/init-sqlite.js
    import sqlite3 from 'sqlite3';
    import fs from 'fs';
    import path from 'path';
@@ -162,13 +165,79 @@ npm install
      console.log('SQLite数据库连接成功');
    });
    
-   // 创建表和导入数据的逻辑...
+   // 创建词汇表
+   db.run(`
+     CREATE TABLE IF NOT EXISTS vocabulary (
+       id INTEGER PRIMARY KEY AUTOINCREMENT,
+       word TEXT NOT NULL UNIQUE,
+       phonetic_symbol TEXT,
+       mean TEXT NOT NULL,
+       initial TEXT NOT NULL,
+       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+     )
+   `, (err) => {
+     if (err) {
+       console.error('创建词汇表失败:', err.message);
+       process.exit(1);
+     }
+     console.log('词汇表创建成功');
+     
+     // 导入CET4词汇数据
+     importCET4Data();
+   });
+   
+   // 导入CET4词汇数据
+   function importCET4Data() {
+     const cet4Dir = path.join(__dirname, '../public/CET4');
+     const jsonFiles = fs.readdirSync(cet4Dir).filter(file => file.endsWith('.json'));
+     
+     let totalWords = 0;
+     let importedWords = 0;
+     
+     jsonFiles.forEach((file, index) => {
+       const filePath = path.join(cet4Dir, file);
+       const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+       
+       totalWords += data.length;
+       
+       data.forEach(word => {
+         db.run(
+           `INSERT OR REPLACE INTO vocabulary (word, phonetic_symbol, mean, initial) VALUES (?, ?, ?, ?)`,
+           [word.word, word.phonetic_symbol, word.mean, word.initial],
+           (err) => {
+             if (err) {
+               console.error(`导入单词 ${word.word} 失败:`, err.message);
+             } else {
+               importedWords++;
+             }
+           }
+         );
+       });
+       
+       console.log(`已导入 ${file} 文件，包含 ${data.length} 个单词`);
+       
+       // 当处理完所有文件后，关闭数据库连接
+       if (index === jsonFiles.length - 1) {
+         setTimeout(() => {
+           console.log(`\n数据导入完成！`);
+           console.log(`总单词数: ${totalWords}`);
+           console.log(`成功导入: ${importedWords}`);
+           db.close();
+         }, 1000);
+       }
+     });
+   }
    ```
 
 3. **更新package.json脚本**：
    ```json
    "scripts": {
-     // ... 其他脚本
+     "dev": "vite",
+     "build": "vite build",
+     "preview": "vite preview",
+     "server": "node --experimental-modules server/index.js",
+     "init-db": "node --experimental-modules server/init-db.js",
      "init-sqlite": "node --experimental-modules server/init-sqlite.js"
    }
    ```
@@ -177,6 +246,75 @@ npm install
    ```bash
    npm run init-sqlite
    ```
+
+### 数据库表结构
+
+#### 1. wordbooks 表
+| 字段名 | 数据类型 | 描述 |
+|--------|----------|------|
+| id | INT | 主键，自增 |
+| name | VARCHAR(100) | 词汇本名称，唯一 |
+| description | TEXT | 词汇本描述 |
+| word_count | INT | 词汇本中单词数量，自动更新 |
+| created_at | TIMESTAMP | 创建时间 |
+| updated_at | TIMESTAMP | 更新时间，自动更新 |
+
+#### 2. vocabulary 表
+| 字段名 | 数据类型 | 描述 |
+|--------|----------|------|
+| id | INT | 主键，自增 |
+| word | VARCHAR(100) | 单词，唯一 |
+| phonetic_symbol | VARCHAR(100) | 音标 |
+| mean | TEXT | 释义 |
+| initial | CHAR(1) | 首字母 |
+| wordbook_id | INT | 外键，关联到 wordbooks 表 |
+| created_at | TIMESTAMP | 创建时间 |
+| updated_at | TIMESTAMP | 更新时间，自动更新 |
+
+#### 3. users 表
+| 字段名 | 数据类型 | 描述 |
+|--------|----------|------|
+| id | INT | 主键，自增 |
+| username | VARCHAR(100) | 用户名，唯一 |
+| phone | VARCHAR(20) | 手机号，唯一 |
+| password | VARCHAR(255) | 密码 |
+| exam_type | VARCHAR(100) | 考试类型，默认"大学英语四级" |
+| created_at | TIMESTAMP | 创建时间 |
+| updated_at | TIMESTAMP | 更新时间，自动更新 |
+
+#### 4. user_settings 表
+| 字段名 | 数据类型 | 描述 |
+|--------|----------|------|
+| id | INT | 主键，自增 |
+| user_id | INT | 用户ID，唯一 |
+| vocabulary_settings | JSON | 词汇学习设置 |
+| reading_settings | JSON | 阅读训练设置 |
+| listening_settings | JSON | 听力训练设置 |
+| writing_settings | JSON | 写作训练设置 |
+| general_settings | JSON | 通用设置 |
+| created_at | TIMESTAMP | 创建时间 |
+| updated_at | TIMESTAMP | 更新时间，自动更新 |
+
+### 故障排除
+
+#### MySQL连接失败
+- 确保MySQL服务正在运行
+- 检查用户名和密码是否正确
+- 确保用户有足够的权限
+- 尝试重置root密码：
+  ```bash
+  mysqladmin -u root password 'new_password'
+  ```
+
+#### 找不到mysql命令
+- 确保MySQL已安装
+- 确保MySQL的bin目录已添加到系统PATH
+- 对于Windows：检查 `C:\Program Files\MySQL\MySQL Server X.X\bin` 是否在PATH中
+- 对于Linux：运行 `sudo apt-get install mysql-client`（Ubuntu/Debian）或 `sudo yum install mysql`（CentOS/RHEL）
+
+#### 端口占用
+- 确保端口3000未被其他程序占用
+- 可以在.env文件中修改PORT值
 
 ### 前端开发模式
 
@@ -272,12 +410,19 @@ starmapenglish/
 │   ├── migrate-wordbooks.js      # 词汇本迁移脚本
 │   └── migrate-wordcount.js      # 词数迁移脚本
 ├── src/                # 前端源代码
-│   ├── assets/         # 资源文件
-│   ├── components/     # Vue组件
-│   ├── data/           # 数据文件
+│   ├── assets/         # 静态资源
+│   ├── components/     # 共享组件
+│   ├── desktop/        # 桌面端组件和视图
+│   ├── mobile/         # 移动端组件和视图
 │   ├── router/         # 路由配置
-│   ├── stores/         # Pinia状态管理
-│   ├── views/          # 页面视图
+│   ├── shared/         # 共享资源和状态
+│   │   ├── composables/ # 可复用逻辑
+│   │   ├── data/        # 数据文件
+│   │   ├── layout/      # 布局组件
+│   │   ├── modals/      # 模态框组件
+│   │   ├── stores/      # 状态管理
+│   │   └── views/       # 共享视图
+│   ├── views/          # 主视图目录
 │   ├── App.vue         # 根组件
 │   ├── main.js         # 入口文件
 │   └── style.css       # 全局样式
@@ -422,6 +567,9 @@ GET /api/settings
 - 移动端：底部导航栏，紧凑布局
 - 平板端：自适应网格布局
 - 桌面端：侧边导航栏，多列布局
+- 智能设备检测：自动识别设备类型并切换视图
+- 路由守卫：根据设备类型自动重定向到相应视图
+- 统一状态管理：共享核心业务逻辑，减少代码冗余
 
 ### 🔧 技术亮点
 - **组件化开发**：功能模块清晰分离，便于维护和扩展
