@@ -135,36 +135,36 @@ const strokeDashoffset = computed(() => {
     <!-- 3. 详细数据矩阵 (剩余空间自动填充) -->
     <!-- 使用 flex-1 占据剩余所有高度，grid 布局 -->
     <div class="flex-1 min-h-0 z-10 pt-4 pb-safe">
-      <div class="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+      <div class="grid grid-cols-2 grid-rows-2 gap-3 h-full">
         
         <!-- 遍历四个数据卡片 -->
         <div v-for="(item, key) in stats" :key="key" 
-             class="glass-card p-4 flex flex-col justify-between relative overflow-hidden">
+             class="glass-card p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden rounded-lg sm:rounded-xl">
           
           <!-- 卡片背景微光 -->
-          <div class="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br opacity-10 rounded-full blur-xl" :class="item.bg.replace('bg-', 'from-')"></div>
+          <div class="absolute -right-3 -top-3 w-12 h-12 bg-gradient-to-br opacity-10 rounded-full blur-lg" :class="item.bg.replace('bg-', 'from-')"></div>
 
           <!-- 上部：图标与标题 -->
           <div class="flex items-start justify-between">
             <div class="flex flex-col">
-              <span class="text-slate-400 text-xs font-medium uppercase tracking-wider">{{ item.label }}</span>
-              <div class="mt-1 flex items-baseline">
-                <span class="text-2xl font-bold text-white">{{ item.value }}</span>
-                <span class="text-xs text-slate-500 ml-1">{{ item.unit }}</span>
+              <span class="text-slate-400 text-[10px] sm:text-xs font-medium uppercase tracking-wider">{{ item.label }}</span>
+              <div class="mt-0.5 flex items-baseline">
+                <span class="text-xl sm:text-2xl font-bold text-white">{{ item.value }}</span>
+                <span class="text-[10px] sm:text-xs text-slate-500 ml-1">{{ item.unit }}</span>
               </div>
             </div>
-            <div class="w-8 h-8 rounded-lg bg-slate-800/50 flex items-center justify-center" :class="item.color">
-              <i class="fa-solid" :class="item.icon"></i>
+            <div class="w-7 h-7 rounded-md bg-slate-800/50 flex items-center justify-center" :class="item.color">
+              <i class="fa-solid text-sm" :class="item.icon"></i>
             </div>
           </div>
 
           <!-- 下部：进度条与百分比 -->
-          <div class="mt-2">
-             <div class="flex justify-between text-xs mb-1">
+          <div class="mt-1.5">
+             <div class="flex justify-between text-[10px] sm:text-xs mb-0.5">
                <span class="text-slate-500">进度</span>
                <span :class="item.color">{{ item.percent }}%</span>
              </div>
-             <div class="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
+             <div class="w-full h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
                <div class="h-full rounded-full transition-all duration-1000" 
                     :class="item.bg" 
                     :style="{ width: `${item.percent}%` }">

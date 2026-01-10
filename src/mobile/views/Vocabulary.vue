@@ -65,29 +65,6 @@ const goToReviewPage = () => {
       </div>
     </div>
     
-    <!-- 词汇本选择 - 新增功能 -->
-    <div class="glass-card p-4 rounded-xl">
-      <h3 class="text-sm font-semibold text-white mb-3">选择词汇本</h3>
-      <div class="overflow-x-auto pb-2 hide-scrollbar">
-        <div class="flex gap-3 min-w-max">
-          <button 
-            v-for="book in wordStore.vocabBooks" 
-            :key="book.id"
-            @click="wordStore.switchVocabBook(book.id)"
-            :class="[
-              'px-4 py-3 rounded-lg transition-all whitespace-nowrap inline-block flex flex-col items-center gap-2 min-w-[80px]',
-              wordStore.currentVocabBook === book.id 
-                ? 'bg-slate-700/70 text-white' 
-                : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
-            ]"
-          >
-            <i :class="[book.icon, book.color, 'text-xl']"></i>
-            <span class="text-sm font-medium">{{ book.name }}</span>
-          </button>
-        </div>
-      </div>
-    </div>
-    
     <!-- 复习提醒卡片 - 独立卡片样式 -->
     <div class="glass-card bg-vocab/10 border border-vocab/30 p-4 rounded-xl">
       <div class="flex flex-col gap-3">

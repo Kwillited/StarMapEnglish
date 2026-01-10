@@ -11,15 +11,6 @@ export const useWordManagementStore = defineStore('wordManagement', {
     // 学习模式
     studyMode: 'browse', // browse, review, study, test
     
-    // 词汇本相关
-    vocabBooks: [
-      { id: 'all', name: '全部词汇', icon: 'fa-solid fa-book-open', color: 'text-blue-400' },
-      { id: 'core', name: '核心词汇', icon: 'fa-solid fa-star', color: 'text-yellow-400' },
-      { id: 'daily', name: '每日新单词', icon: 'fa-solid fa-calendar-plus', color: 'text-green-400' },
-      { id: 'review', name: '待复习词汇', icon: 'fa-solid fa-repeat', color: 'text-purple-400' }
-    ],
-    currentVocabBook: 'all',
-    
     // 复习相关状态
     reviewProgress: 0,
     totalReviewWords: 0,
@@ -283,13 +274,6 @@ export const useWordManagementStore = defineStore('wordManagement', {
     // 检查学习轮次完成情况（调用通用方法）
     checkStudyRoundCompletion() {
       this.checkRoundCompletion('study');
-    },
-    
-    // 切换词汇本
-    switchVocabBook(bookId) {
-      this.currentVocabBook = bookId;
-      // 这里可以添加根据词汇本过滤单词的逻辑
-      // 目前暂时使用默认单词列表
     }
   }
 });
