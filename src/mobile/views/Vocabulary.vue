@@ -1,15 +1,13 @@
 <script setup>
 // 移动端词汇学习页面
 import { useWordManagementStore } from '../../shared/stores/wordManagement.js';
-import { ref, onMounted, computed, watch } from 'vue';
+import { } from 'vue';
 import { useRouter } from 'vue-router';
 
 // 使用单词管理 Pinia store
 const wordStore = useWordManagementStore();
 // 路由实例
 const router = useRouter();
-
-
 
 // 跳转到复习页面
 const goToReviewPage = () => {

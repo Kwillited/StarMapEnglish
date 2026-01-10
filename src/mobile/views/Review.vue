@@ -11,8 +11,6 @@ const currentWord = computed(() => {
   return wordStore.reviewWords[0] || null;
 });
 
-
-
 // 处理单词学习完成事件
 const handleComplete = (status) => {
   if (currentWord.value) {

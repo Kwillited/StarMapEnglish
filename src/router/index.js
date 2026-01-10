@@ -11,10 +11,13 @@ const Study = () => import('../mobile/views/Study.vue');
 const Test = () => import('../mobile/views/Test.vue');
 const Reading = () => import('../desktop/views/Reading.vue');
 const ReadingMobile = () => import('../mobile/views/ReadingMobile.vue');
+const ArticleDetail = () => import('../mobile/views/ArticleDetail.vue'); // 移动端文章详情页
 const Listening = () => import('../desktop/views/ListeningDesktop.vue');
 const ListeningMobile = () => import('../mobile/views/ListeningMobile.vue');
+const ListeningDetail = () => import('../mobile/views/ListeningDetail.vue'); // 移动端听力详情页
 const Writing = () => import('../desktop/views/Writing.vue');
 const WritingMobile = () => import('../mobile/views/WritingMobile.vue');
+const WritingDetail = () => import('../mobile/views/WritingDetail.vue'); // 移动端写作详情页
 const Settings = () => import('../desktop/views/Settings.vue'); // 桌面端设置（带选项卡）
 const MobileSettings = () => import('../mobile/views/Settings.vue'); // 移动端设置（带菜单）
 // 设置二级页面
@@ -89,8 +92,11 @@ const router = createRouter({
     { path: '/listening', name: 'Listening', component: Listening },
     { path: '/listening/mobile', name: 'ListeningMobile', component: ListeningMobile },
     { path: '/reading/mobile', name: 'ReadingMobile', component: ReadingMobile },
+    { path: '/article/:id', name: 'ArticleDetail', component: ArticleDetail },
+    { path: '/listening/:id', name: 'ListeningDetail', component: ListeningDetail },
     { path: '/writing', name: 'Writing', component: Writing },
     { path: '/writing/mobile', name: 'WritingMobile', component: WritingMobile },
+    { path: '/writing/:id', name: 'WritingDetail', component: WritingDetail },
     { 
       path: '/settings', 
       name: 'Settings', 

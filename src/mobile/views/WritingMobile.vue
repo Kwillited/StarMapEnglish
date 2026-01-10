@@ -1,6 +1,10 @@
 <script setup>
 // 移动端写作题目选择页面
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+// 获取路由实例
+const router = useRouter();
 
 // 写作题目列表数据
 const writingTopics = [
@@ -86,8 +90,8 @@ const filteredTopics = () => {
 // 处理题目选择
 const selectTopic = (topic) => {
   console.log('选择题目:', topic.title);
-  // 这里可以添加导航到写作详情页的逻辑
-  // router.push({ name: 'WritingDetail', params: { id: topic.id } });
+  // 导航到写作详情页
+  router.push({ name: 'WritingDetail', params: { id: topic.id } });
 };
 </script>
 

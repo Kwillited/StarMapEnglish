@@ -1,6 +1,10 @@
 <script setup>
 // 移动端文章选择页面
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+// 获取路由实例
+const router = useRouter();
 
 // 文章列表数据
 const articles = [
@@ -80,8 +84,8 @@ const filteredArticles = () => {
 // 处理文章选择
 const selectArticle = (article) => {
   console.log('选择文章:', article.title);
-  // 这里可以添加导航到文章详情页的逻辑
-  // router.push({ name: 'ArticleDetail', params: { id: article.id } });
+  // 导航到文章详情页
+  router.push({ name: 'ArticleDetail', params: { id: article.id } });
 };
 </script>
 
