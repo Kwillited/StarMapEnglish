@@ -104,7 +104,7 @@ const selectTopic = (topic) => {
     
     <!-- 过滤选项 -->
     <div class="glass-card p-4 rounded-xl">
-      <div class="space-y-3">
+      <div class="grid grid-cols-2 gap-4">
         <!-- 难度过滤 -->
         <div>
           <label class="block text-sm font-medium text-slate-300 mb-1">难度</label>

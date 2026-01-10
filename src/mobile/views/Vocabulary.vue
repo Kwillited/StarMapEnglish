@@ -9,10 +9,7 @@ const wordStore = useWordManagementStore();
 // 路由实例
 const router = useRouter();
 
-// 获取当前模式下的单词列表
-const currentWords = computed(() => {
-  return wordStore.studyMode === 'review' ? wordStore.filteredReviewWords : wordStore.filteredWords;
-});
+
 
 // 跳转到复习页面
 const goToReviewPage = () => {
@@ -26,7 +23,7 @@ const goToReviewPage = () => {
     <div class="fixed top-0 left-0 right-0 bg-transparent backdrop-blur-xl border-b border-slate-700/30 px-4 py-2 sm:py-3 z-50">
       <h2 class="text-lg font-bold text-white flex items-center justify-center p-4">
         <i class="fa-solid fa-shapes text-vocab mr-2"></i>
-        反应堆
+        词汇学习
       </h2>
     </div>
     

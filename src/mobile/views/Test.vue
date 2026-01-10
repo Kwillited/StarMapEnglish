@@ -107,14 +107,14 @@ const handleNext = () => {
         <!-- 测试题目 -->
         <div class="mb-6 w-full">
           <h4 class="text-center text-white text-base font-medium mb-4">请选择正确的释义</h4>
-          <div class="space-y-2">
+          <div class="space-y-4">
             <button 
               v-for="option in options" 
               :key="option"
               @click="handleSelectAnswer(option)"
               :disabled="showCorrectAnswer"
               :class="[
-                'w-full text-left px-4 py-3 rounded-lg transition-colors',
+                'w-full text-left px-4 py-3 rounded-lg transition-all duration-200 active:scale-95 h-16 flex items-center',
                 showCorrectAnswer ? (
                   option === currentWord.meaning 
                     ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
@@ -130,30 +130,21 @@ const handleNext = () => {
           </div>
         </div>
         
-        <!-- 下一题按钮 -->
+      </div>
+    </div>
+    
+    <!-- 下一题按钮 - 固定在底部 -->
+    <div v-if="currentWord && showCorrectAnswer" class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-md p-4">
+      <div class="flex gap-3 justify-center">
         <button 
-          v-if="showCorrectAnswer"
           @click="handleNext"
-          class="w-full bg-accent hover:bg-accent/90 text-white py-2.5 rounded-lg transition-colors"
+          class="py-2 px-12 rounded-lg text-accent border-b-4 border-accent"
         >
           下一题
         </button>
       </div>
     </div>
     
-    <!-- 测试完成 -->
-    <div v-else class="p-6 rounded-2xl flex flex-col items-center justify-center">
-      <div class="text-green-400 text-4xl mb-3">
-        <i class="fa-solid fa-check-circle"></i>
-      </div>
-      <h3 class="text-xl font-bold text-white mb-2">测试完成！</h3>
-      <p class="text-slate-400 text-center mb-4">您已经完成了所有测试题目</p>
-      <button 
-        @click="wordStore.resetLearningState"
-        class="bg-accent hover:bg-accent/90 text-white py-2.5 px-4 rounded-lg transition-colors"
-      >
-        重新测试
-      </button>
-    </div>
+
   </div>
 </template>

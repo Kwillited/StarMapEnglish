@@ -114,14 +114,14 @@ const toggleMeaning = () => {
         <!-- 测试题目 -->
         <div class="mb-6 w-full">
           <h4 class="text-center text-white text-base font-medium mb-4">请选择正确的释义</h4>
-          <div class="space-y-2">
+          <div class="space-y-4">
             <button 
               v-for="option in options" 
               :key="option"
               @click="handleSelectAnswer(option)"
               :disabled="showCorrectAnswer"
               :class="[
-                'w-full text-left px-4 py-3 rounded-lg transition-colors',
+                'w-full text-left px-4 py-3 rounded-lg transition-all duration-200 active:scale-95 h-16 flex items-center',
                 showCorrectAnswer ? (
                   option === currentWord.meaning 
                     ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
@@ -143,12 +143,12 @@ const toggleMeaning = () => {
     
     <!-- 底部固定按钮 - 查看答案/下一题 -->
     <div v-if="currentWord" class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-md p-4">
-      <div class="flex gap-3 w-full">
+      <div class="flex gap-3 justify-center">
         <button 
           @click="showCorrectAnswer ? handleNext() : toggleMeaning()"
-          class="flex-1 bg-accent text-white py-2 rounded-lg"
+          class="py-2 px-12 rounded-lg text-accent border-b-4 border-accent"
         >
-          {{ showCorrectAnswer ? '下一题' : '查看答案' }}
+          {{ showCorrectAnswer ? '下一题' : '看答案' }}
         </button>
       </div>
     </div>
@@ -179,7 +179,7 @@ const toggleMeaning = () => {
       
       <button 
         @click="wordStore.resetLearningState"
-        class="bg-accent text-white py-2 px-4 rounded-lg"
+        class="text-accent py-2 px-4 rounded-lg border-b-4 border-accent"
       >
         重新开始
       </button>
